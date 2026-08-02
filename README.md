@@ -18,7 +18,7 @@ Node.js, pm2), creates the venv, installs `requirements.txt`, generates
 standard port 443** by asking CloudPanel's own Nginx to reverse-proxy your
 domain to the app and issuing a free Let's Encrypt certificate.
 
-The app itself only ever binds to `127.0.0.1:8000` (never `0.0.0.0`, never
+The app itself only ever binds to `127.0.0.1:8001` (never `0.0.0.0`, never
 `443`), so it can never clash with CloudPanel's Nginx (which already owns
 80/443 for every site on the box) or with the **CloudPanel admin panel on
 port 8443** — that port is never touched.
@@ -30,7 +30,7 @@ chmod +x install.sh
 sudo ./install.sh --domain app.yourdomain.com --email you@yourdomain.com
 ```
 
-No domain yet? Install the app only (reachable at `127.0.0.1:8000` on the
+No domain yet? Install the app only (reachable at `127.0.0.1:8001` on the
 server) and wire up HTTPS later once DNS is pointed at the server:
 
 ```bash

@@ -9,7 +9,7 @@
 #   2. Creates a venv and installs requirements.txt into it.
 #   3. Generates .env (secrets are created once and preserved on re-run).
 #   4. Starts the app under PM2 as a process named "web", bound ONLY to
-#      127.0.0.1:<APP_PORT> (default 8000) — never to 0.0.0.0 — and enables
+#      127.0.0.1:<APP_PORT> (default 8001) — never to 0.0.0.0 — and enables
 #      pm2 startup so it survives reboots.
 #   5. Wires the app up to HTTPS on the standard port 443 by asking
 #      CloudPanel's own Nginx (via `clpctl`) to create a reverse-proxy vhost
@@ -43,7 +43,7 @@ ENV_FILE="${APP_DIR}/.env"
 cd "${APP_DIR}"
 
 APP_HOST="127.0.0.1"
-APP_PORT="8000"
+APP_PORT="8001"
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD=""
 FORCE_REGEN=0
@@ -93,7 +93,7 @@ Required for HTTPS on 443 (skip both to install app-only, no public HTTPS):
   --email EMAIL                Email used for the Let's Encrypt certificate.
 
 Optional:
-  --port PORT                 Internal app port, 127.0.0.1 only (default: 8000,
+  --port PORT                 Internal app port, 127.0.0.1 only (default: 8001,
                                only used on first install).
   --site-user NAME             CloudPanel site user to own the vhost
                                (default: auto-derived from domain).
@@ -270,7 +270,7 @@ else:
     admin_password_hash = get("ADMIN_PASSWORD_HASH")
 
 host = get("HOST") or os.environ.get("IN_HOST", "127.0.0.1")
-port = get("PORT") or os.environ.get("IN_PORT", "8000")
+port = get("PORT") or os.environ.get("IN_PORT", "8001")
 admin_username = get("ADMIN_USERNAME") or os.environ.get("IN_ADMIN_USERNAME", "admin")
 allowed_origins = get("ALLOWED_ORIGINS") or os.environ.get("IN_ALLOWED_ORIGINS", "")
 cookie_secure = get("COOKIE_SECURE") or os.environ.get("IN_COOKIE_SECURE", "true")

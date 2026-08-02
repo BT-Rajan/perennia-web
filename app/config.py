@@ -32,7 +32,7 @@ class Settings:
     # secret is ever allowed to live under here.
     PUBLIC_DIR: Path = Path(_get("PUBLIC_DIR", str(BASE_DIR / "public")))
 
-    PORT: int = int(_get("PORT", "8000"))
+    PORT: int = int(_get("PORT", "8001"))
     HOST: str = _get("HOST", "127.0.0.1")
 
     # Comma-separated list of origins allowed to call the API. Same-origin

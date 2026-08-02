@@ -18,7 +18,7 @@ ENV_FILE="${APP_DIR}/.env"
 cd "${APP_DIR}"
 
 APP_HOST="127.0.0.1"
-APP_PORT="8000"
+APP_PORT="8001"
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD=""
 FORCE_REGEN=0
@@ -64,7 +64,7 @@ usage() {
 Usage: ./installer.sh [options]
 
   --host HOST                App bind host (default: 127.0.0.1, only used on first install)
-  --port PORT                App bind port (default: 8000, only used on first install)
+  --port PORT                App bind port (default: 8001, only used on first install)
   --admin-username NAME      Admin login username (default: admin, only used on first install)
   --admin-password PASS      Admin login password (default: auto-generated and printed once)
   --force                    Regenerate SECRET_KEY / ENCRYPTION_KEY / ADMIN_PASSWORD_HASH
@@ -197,7 +197,7 @@ else:
     admin_password_hash = get("ADMIN_PASSWORD_HASH")
 
 host = get("HOST") or os.environ.get("IN_HOST", "127.0.0.1")
-port = get("PORT") or os.environ.get("IN_PORT", "8000")
+port = get("PORT") or os.environ.get("IN_PORT", "8001")
 admin_username = get("ADMIN_USERNAME") or os.environ.get("IN_ADMIN_USERNAME", "admin")
 
 # Anything else the app understands (see app/config.py + .env.example) is

@@ -39,7 +39,7 @@ QUICK START (3 Steps):
    1. Edit: data/config.json
    2. Add your Anthropic API key
    3. Double-click: start-server.bat
-   4. Open browser: http://localhost:8000
+   4. Open browser: http://localhost:8001
 
 ═══════════════════════════════════════════════════════════════
 
@@ -100,7 +100,7 @@ Step 3: Configure & Start Server
 5. Go back to project folder
 6. Double-click: start-server.bat
 7. A black window will open
-8. Wait for text: "Uvicorn running on http://0.0.0.0:8000"
+8. Wait for text: "Uvicorn running on http://0.0.0.0:8001"
 9. Keep this window open
 
 ═══════════════════════════════════════════════════════════════
@@ -109,13 +109,13 @@ Step 4: Access Application
 ───────────────────────────
 
 1. Open web browser (Chrome, Firefox, Edge, Safari)
-2. Visit: http://localhost:8000
+2. Visit: http://localhost:8001
 3. You should see Perennia landing page
 4. Click anywhere to open chat
 5. Try asking a question!
 
 Admin Panel:
-   Visit: http://localhost:8000/admin
+   Visit: http://localhost:8001/admin
    This is where you can configure the application
 
 ═══════════════════════════════════════════════════════════════
@@ -153,14 +153,14 @@ Problem: Server won't start
 ──────────────────────────
 Solution:
 1. Make sure config.json has valid API key
-2. Check if port 8000 is available
-3. No other server running on port 8000
+2. Check if port 8001 is available
+3. No other server running on port 8001
 4. Try: uvicorn app.main:app --port 8001 (different port)
 
 Problem: "Address already in use"
 ────────────────────────────────
 Solution:
-1. Another server is running on port 8000
+1. Another server is running on port 8001
 2. Close other server windows
 3. Or use different port (see above)
 
@@ -170,7 +170,7 @@ Solution:
 1. Make sure start-server.bat is running
 2. Wait 5-10 seconds after starting
 3. Make sure you're using http:// not https://
-4. Check: http://localhost:8000
+4. Check: http://localhost:8001
 
 ═══════════════════════════════════════════════════════════════
 
@@ -251,12 +251,12 @@ Disk space required: ~500 MB
 WHAT PORTS ARE USED
 ═════════════════════════════════════════════════════════════
 
-Default: http://localhost:8000
+Default: http://localhost:8001
   → Main application
   → Admin panel at /admin
   
 Alternative port: http://localhost:8001
-  → Use if 8000 is busy
+  → Use if 8001 is busy
   → Edit start-server.bat to change
 
 ═══════════════════════════════════════════════════════════════
