@@ -1,0 +1,284 @@
+╔════════════════════════════════════════════════════════════════╗
+║         PERENNIA PRODUCTION - WINDOWS INSTALLATION             ║
+╚════════════════════════════════════════════════════════════════╝
+
+QUICK START (3 Steps):
+═══════════════════════════════════════════════════════════════
+
+1. INSTALL PYTHON (if not already installed)
+   ─────────────────────────────────────
+   Download: https://www.python.org/downloads/
+   
+   ⚠️  IMPORTANT:
+      - Choose Python 3.9 or higher
+      - CHECK "Add Python to PATH" during installation
+      - Click "Install Now"
+
+2. RUN INSTALLER
+   ─────────────────────────────────────
+   
+   Option A: Batch Script (Recommended - Easy)
+   ─────────────────────
+   1. Extract perennia-production-code.zip
+   2. Open folder
+   3. Double-click: install-windows.bat
+   4. Follow on-screen instructions
+   5. Wait for installation to complete
+   
+   Option B: PowerShell Script (Advanced - Better Feedback)
+   ─────────────────────
+   1. Extract perennia-production-code.zip
+   2. Open PowerShell as Administrator
+   3. Navigate to folder: cd C:\path\to\perennia-production
+   4. Run: Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+   5. Run: .\install-windows.ps1
+   6. Follow on-screen instructions
+
+3. CONFIGURE & START
+   ─────────────────────────────────────
+   1. Edit: data/config.json
+   2. Add your Anthropic API key
+   3. Double-click: start-server.bat
+   4. Open browser: http://localhost:8000
+
+═══════════════════════════════════════════════════════════════
+
+DETAILED INSTALLATION GUIDE
+═══════════════════════════════════════════════════════════════
+
+Step 1: Install Python
+───────────────────────
+
+1. Visit: https://www.python.org/downloads/
+2. Download Python 3.9+ (latest recommended)
+3. Run installer
+4. IMPORTANT: Check "Add Python to PATH"
+5. Click "Install Now"
+6. Wait for installation (2-5 minutes)
+7. Close installer
+
+Verify Python installed:
+   Open Command Prompt
+   Type: python --version
+   Should show: Python 3.x.x
+
+═══════════════════════════════════════════════════════════════
+
+Step 2: Run Windows Installer
+───────────────────────────────
+
+Option A: Batch Script (Simplest)
+──────────────────────
+
+1. Download perennia-production-code.zip
+2. Right-click → Extract All
+3. Enter folder
+4. Right-click: install-windows.bat → Run as Administrator
+5. Wait for window to open
+6. Read instructions (should say "This installer will...")
+7. Press Enter to continue
+8. Watch for messages:
+   ✓ [1/6] Checking Python installation... OK
+   ✓ [2/6] Checking pip installation... OK
+   ✓ [3/6] Creating virtual environment... OK
+   ✓ [4/6] Installing dependencies... (This takes 2-3 minutes)
+   ✓ [5/6] Setting up directories... OK
+   ✓ [6/6] Installation complete!
+9. Press Enter when done
+10. Go to Step 3
+
+═══════════════════════════════════════════════════════════════
+
+Step 3: Configure & Start Server
+───────────────────────────────────
+
+1. Open: data/config.json (in project folder)
+2. Find: "apiKeyEncrypted": ""
+3. Replace with your API key:
+   "apiKeyEncrypted": "your-anthropic-api-key-here"
+4. Save the file (Ctrl+S)
+5. Go back to project folder
+6. Double-click: start-server.bat
+7. A black window will open
+8. Wait for text: "Uvicorn running on http://0.0.0.0:8000"
+9. Keep this window open
+
+═══════════════════════════════════════════════════════════════
+
+Step 4: Access Application
+───────────────────────────
+
+1. Open web browser (Chrome, Firefox, Edge, Safari)
+2. Visit: http://localhost:8000
+3. You should see Perennia landing page
+4. Click anywhere to open chat
+5. Try asking a question!
+
+Admin Panel:
+   Visit: http://localhost:8000/admin
+   This is where you can configure the application
+
+═══════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING
+═══════════════════════════════════════════════════════════════
+
+Problem: "Python not found"
+─────────────────────────
+Solution:
+1. Make sure Python is installed
+2. Make sure "Add Python to PATH" was checked
+3. Restart Command Prompt after installing Python
+4. Run: python --version (to verify)
+5. If still not found, reinstall Python
+
+Problem: "pip not found"
+──────────────────────
+Solution:
+1. Python should have installed pip automatically
+2. Try: python -m pip --version
+3. If that works, reinstall Python with pip enabled
+
+Problem: Dependencies failed to install
+───────────────────────────────────────
+Solution:
+1. Make sure you have internet connection
+2. Your antivirus might be blocking pip
+3. Try running as Administrator
+4. Manual install:
+   .\venv\Scripts\activate.bat
+   pip install -r requirements.txt
+
+Problem: Server won't start
+──────────────────────────
+Solution:
+1. Make sure config.json has valid API key
+2. Check if port 8000 is available
+3. No other server running on port 8000
+4. Try: uvicorn app.main:app --port 8001 (different port)
+
+Problem: "Address already in use"
+────────────────────────────────
+Solution:
+1. Another server is running on port 8000
+2. Close other server windows
+3. Or use different port (see above)
+
+Problem: Browser shows "Connection refused"
+───────────────────────────────────────────
+Solution:
+1. Make sure start-server.bat is running
+2. Wait 5-10 seconds after starting
+3. Make sure you're using http:// not https://
+4. Check: http://localhost:8000
+
+═══════════════════════════════════════════════════════════════
+
+FILE DESCRIPTIONS
+═════════════════════════════════════════════════════════════
+
+install-windows.bat
+   → Main installer script (Batch format)
+   → Double-click to run
+   → No PowerShell required
+   
+install-windows.ps1
+   → Alternative installer (PowerShell format)
+   → For advanced users
+   → Better error messages
+   
+start-server.bat
+   → Starts the Perennia server
+   → Double-click to run
+   → Must run install-windows.bat first
+   
+data/config.json
+   → Configuration file (JSON format)
+   → Edit with Notepad or any text editor
+   → Add your API key here
+   → Controls landing page text, booking prompts, etc.
+
+═══════════════════════════════════════════════════════════════
+
+UNINSTALLING
+═════════════════════════════════════════════════════════════
+
+To remove Perennia:
+
+1. Stop the server (close start-server.bat window)
+2. Delete the perennia-production folder
+3. Done!
+
+Note: Virtual environment is inside the folder, so everything
+gets deleted when you delete the folder.
+
+═══════════════════════════════════════════════════════════════
+
+GETTING HELP
+═════════════════════════════════════════════════════════════
+
+If you encounter issues:
+
+1. Check README.md in the project folder
+2. Review error messages carefully (they're helpful!)
+3. Check console output for specific errors
+4. Verify Python and pip are working: python --version
+5. Contact support: support@perennia.com
+
+═══════════════════════════════════════════════════════════════
+
+WHAT GETS INSTALLED
+═════════════════════════════════════════════════════════════
+
+The installer will:
+
+1. ✓ Check Python installation (3.7+)
+2. ✓ Create Python virtual environment (venv folder)
+3. ✓ Download and install all Python packages
+   - FastAPI (web framework)
+   - Uvicorn (server)
+   - Claude SDK (AI library)
+   - And 10+ others
+4. ✓ Create data directories
+5. ✓ Create config.json (with defaults)
+6. ✓ Verify installation
+
+Total installation time: 5-10 minutes
+Disk space required: ~500 MB
+
+═══════════════════════════════════════════════════════════════
+
+WHAT PORTS ARE USED
+═════════════════════════════════════════════════════════════
+
+Default: http://localhost:8000
+  → Main application
+  → Admin panel at /admin
+  
+Alternative port: http://localhost:8001
+  → Use if 8000 is busy
+  → Edit start-server.bat to change
+
+═══════════════════════════════════════════════════════════════
+
+SECURITY NOTES
+═════════════════════════════════════════════════════════════
+
+⚠️  DO NOT share your API key
+⚠️  DO NOT commit config.json to GitHub
+⚠️  Local server only (not exposed to internet by default)
+⚠️  HTTPS not enabled by default (localhost only)
+
+═══════════════════════════════════════════════════════════════
+
+VERSION INFORMATION
+═════════════════════════════════════════════════════════════
+
+Perennia Production: 1.0
+Release Date: August 2, 2026
+Installer Version: 1.0
+Tested On: Windows 10, Windows 11, Windows Server 2019+
+
+═══════════════════════════════════════════════════════════════
+
+Ready to install? Follow the "Quick Start" section above!
