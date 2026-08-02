@@ -9,7 +9,41 @@ git clone https://github.com/BT-Rajan/perennia-web.git
 cd perennia-web
 ```
 
-## Install Dependencies
+## One-Command Install (Ubuntu + CloudPanel, production)
+
+`install.sh` does everything end-to-end: installs system deps (python3/venv,
+Node.js, pm2), creates the venv, installs `requirements.txt`, generates
+`.env` with real secrets, starts the app under **pm2 as a process named
+`web`**, and — if you pass `--domain` — wires it up to **HTTPS on the
+standard port 443** by asking CloudPanel's own Nginx to reverse-proxy your
+domain to the app and issuing a free Let's Encrypt certificate.
+
+The app itself only ever binds to `127.0.0.1:8000` (never `0.0.0.0`, never
+`443`), so it can never clash with CloudPanel's Nginx (which already owns
+80/443 for every site on the box) or with the **CloudPanel admin panel on
+port 8443** — that port is never touched.
+
+```bash
+git clone https://github.com/BT-Rajan/perennia-web.git
+cd perennia-web
+chmod +x install.sh
+sudo ./install.sh --domain app.yourdomain.com --email you@yourdomain.com
+```
+
+No domain yet? Install the app only (reachable at `127.0.0.1:8000` on the
+server) and wire up HTTPS later once DNS is pointed at the server:
+
+```bash
+sudo ./install.sh
+# later:
+sudo ./install.sh --domain app.yourdomain.com --email you@yourdomain.com
+```
+
+Re-running `install.sh` is safe — it preserves your existing secrets and
+admin password unless you pass `--force`. See `./install.sh --help` for all
+options (custom port, admin credentials, CloudPanel site user, etc).
+
+## Install Dependencies (manual / other OS)
 
 ```bash
 pip install -r requirements.txt
