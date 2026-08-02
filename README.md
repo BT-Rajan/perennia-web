@@ -82,7 +82,57 @@ perennia-web/
 
 Visit `http://localhost:5000` after starting server.
 
-## Production
+## Windows CMD
+
+### Clone
+
+```cmd
+git clone https://github.com/BT-Rajan/perennia-web.git
+cd perennia-web
+```
+
+### Install Dependencies
+
+```cmd
+pip install -r requirements.txt
+```
+
+### Environment Setup
+
+```cmd
+copy .env.example .env
+notepad .env
+```
+
+### Generate Secrets
+
+```cmd
+python scripts/gen_secrets.py
+```
+
+### Run Locally
+
+```cmd
+python app/main.py
+```
+
+Server runs on `http://localhost:5000`
+
+### Docker
+
+```cmd
+docker build -t perennia-web .
+docker run -p 5000:5000 perennia-web
+```
+
+### Production
+
+```cmd
+pip install gunicorn
+gunicorn -w 4 -b 0.0.0.0:5000 app.main:app
+```
+
+## Linux Production
 
 ```bash
 gunicorn -w 4 -b 0.0.0.0:5000 app.main:app
