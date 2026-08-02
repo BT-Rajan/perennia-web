@@ -47,6 +47,7 @@ APP_PORT="8001"
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD=""
 FORCE_REGEN=0
+PORT_EXPLICIT=0
 
 DOMAIN=""
 LE_EMAIL=""
@@ -93,8 +94,10 @@ Required for HTTPS on 443 (skip both to install app-only, no public HTTPS):
   --email EMAIL                Email used for the Let's Encrypt certificate.
 
 Optional:
-  --port PORT                 Internal app port, 127.0.0.1 only (default: 8001,
-                               only used on first install).
+  --port PORT                 Internal app port, 127.0.0.1 only (default: 8001).
+                               Takes effect on every run, including re-installs
+                               — an explicit --port always overwrites whatever
+                               PORT is currently in .env.
   --site-user NAME             CloudPanel site user to own the vhost
                                (default: auto-derived from domain).
   --site-user-password PASS    CloudPanel site user password
@@ -117,7 +120,7 @@ while [[ $# -gt 0 ]]; do
     case "$1" in
         --domain) DOMAIN="$2"; shift 2 ;;
         --email) LE_EMAIL="$2"; shift 2 ;;
-        --port) APP_PORT="$2"; shift 2 ;;
+        --port) APP_PORT="$2"; PORT_EXPLICIT=1; shift 2 ;;
         --site-user) SITE_USER="$2"; shift 2 ;;
         --site-user-password) SITE_USER_PASSWORD="$2"; shift 2 ;;
         --admin-username) ADMIN_USERNAME="$2"; shift 2 ;;
@@ -220,6 +223,7 @@ FORCE_REGEN="${FORCE_REGEN}" \
 ENV_FILE="${ENV_FILE}" \
 IN_HOST="${APP_HOST}" \
 IN_PORT="${APP_PORT}" \
+PORT_EXPLICIT="${PORT_EXPLICIT}" \
 IN_ADMIN_USERNAME="${ADMIN_USERNAME}" \
 IN_ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
 IN_COOKIE_SECURE="$([ -n "${DOMAIN}" ] && echo true || echo true)" \
@@ -270,7 +274,16 @@ else:
     admin_password_hash = get("ADMIN_PASSWORD_HASH")
 
 host = get("HOST") or os.environ.get("IN_HOST", "127.0.0.1")
-port = get("PORT") or os.environ.get("IN_PORT", "8001")
+
+# An explicitly-passed --port must always win, even on a re-install where
+# .env already has some (possibly stale/wrong) PORT value — otherwise
+# --port is silently a no-op after the very first install, which is
+# exactly the trap that cost a lot of debugging time in practice.
+port_explicit = os.environ.get("PORT_EXPLICIT") == "1"
+if port_explicit:
+    port = os.environ.get("IN_PORT", "8001")
+else:
+    port = get("PORT") or os.environ.get("IN_PORT", "8001")
 admin_username = get("ADMIN_USERNAME") or os.environ.get("IN_ADMIN_USERNAME", "admin")
 allowed_origins = get("ALLOWED_ORIGINS") or os.environ.get("IN_ALLOWED_ORIGINS", "")
 cookie_secure = get("COOKIE_SECURE") or os.environ.get("IN_COOKIE_SECURE", "true")

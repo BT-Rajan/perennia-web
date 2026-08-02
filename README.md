@@ -40,8 +40,27 @@ sudo ./install.sh --domain app.yourdomain.com --email you@yourdomain.com
 ```
 
 Re-running `install.sh` is safe — it preserves your existing secrets and
-admin password unless you pass `--force`. See `./install.sh --help` for all
-options (custom port, admin credentials, CloudPanel site user, etc).
+admin password unless you pass `--force`. An explicit `--port` always takes
+effect, even on a re-install (it overwrites whatever `PORT` is currently in
+`.env`), so moving the app to a different internal port later is just:
+
+```bash
+sudo ./install.sh --port 8001 --domain app.yourdomain.com --email you@yourdomain.com
+```
+
+If you change the port and the app is already live behind a CloudPanel
+reverse-proxy site, also re-point that site's `proxy_pass` to the new port
+(CloudPanel has no `site:update:reverse-proxy` CLI command as of this
+writing, so it's a one-line manual edit + reload):
+
+```bash
+sudo grep -rl "127.0.0.1:<OLD_PORT>" /etc/nginx/sites-enabled/
+sudo sed -i 's/127\.0\.0\.1:<OLD_PORT>/127.0.0.1:<NEW_PORT>/g' /etc/nginx/sites-enabled/<your-vhost>.conf
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+See `./install.sh --help` for all options (custom port, admin credentials,
+CloudPanel site user, etc).
 
 ## Install Dependencies (manual / other OS)
 
