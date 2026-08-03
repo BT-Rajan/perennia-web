@@ -27,3 +27,4 @@ htmlcov/
 data/*.db
 data/*.json
 *.backup
+logs/*.log
