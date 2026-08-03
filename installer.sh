@@ -18,10 +18,11 @@ ENV_FILE="${APP_DIR}/.env"
 cd "${APP_DIR}"
 
 APP_HOST="127.0.0.1"
-APP_PORT="8000"
+APP_PORT="8001"
 ADMIN_USERNAME="admin"
 ADMIN_PASSWORD=""
 FORCE_REGEN=0
+PORT_EXPLICIT=0
 
 SERVER_IP=$(hostname -I 2>/dev/null | awk '{print $1}')
 
@@ -64,7 +65,8 @@ usage() {
 Usage: ./installer.sh [options]
 
   --host HOST                App bind host (default: 127.0.0.1, only used on first install)
-  --port PORT                App bind port (default: 8000, only used on first install)
+  --port PORT                App bind port (default: 8001). Takes effect on every
+                              run, including re-installs.
   --admin-username NAME      Admin login username (default: admin, only used on first install)
   --admin-password PASS      Admin login password (default: auto-generated and printed once)
   --force                    Regenerate SECRET_KEY / ENCRYPTION_KEY / ADMIN_PASSWORD_HASH
@@ -77,7 +79,7 @@ EOF
 while [[ $# -gt 0 ]]; do
     case "$1" in
         --host) APP_HOST="$2"; shift 2 ;;
-        --port) APP_PORT="$2"; shift 2 ;;
+        --port) APP_PORT="$2"; PORT_EXPLICIT=1; shift 2 ;;
         --admin-username) ADMIN_USERNAME="$2"; shift 2 ;;
         --admin-password) ADMIN_PASSWORD="$2"; shift 2 ;;
         --force) FORCE_REGEN=1; shift ;;
@@ -149,6 +151,7 @@ FORCE_REGEN="${FORCE_REGEN}" \
 ENV_FILE="${ENV_FILE}" \
 IN_HOST="${APP_HOST}" \
 IN_PORT="${APP_PORT}" \
+PORT_EXPLICIT="${PORT_EXPLICIT}" \
 IN_ADMIN_USERNAME="${ADMIN_USERNAME}" \
 IN_ADMIN_PASSWORD="${ADMIN_PASSWORD}" \
 OUT_PASSWORD_FILE="${GENERATED_PASSWORD_FILE}" \
@@ -197,7 +200,14 @@ else:
     admin_password_hash = get("ADMIN_PASSWORD_HASH")
 
 host = get("HOST") or os.environ.get("IN_HOST", "127.0.0.1")
-port = get("PORT") or os.environ.get("IN_PORT", "8000")
+
+# An explicitly-passed --port must always win, even on a re-install where
+# .env already has some (possibly stale/wrong) PORT value.
+port_explicit = os.environ.get("PORT_EXPLICIT") == "1"
+if port_explicit:
+    port = os.environ.get("IN_PORT", "8001")
+else:
+    port = get("PORT") or os.environ.get("IN_PORT", "8001")
 admin_username = get("ADMIN_USERNAME") or os.environ.get("IN_ADMIN_USERNAME", "admin")
 
 # Anything else the app understands (see app/config.py + .env.example) is
