@@ -1,0 +1,33 @@
+[Unit]
+Description=Perennia Web Application (HTTPS)
+After=network.target
+
+[Service]
+Type=notify
+User=www-data
+Group=www-data
+WorkingDirectory=/home/perennia/htdocs/www.perennia.org
+Environment="PATH=/home/perennia/htdocs/www.perennia.org/venv/bin"
+ExecStart=/home/perennia/htdocs/www.perennia.org/venv/bin/python3 start-https.py
+Restart=always
+RestartSec=10
+
+# Security
+ProtectSystem=strict
+ProtectHome=yes
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=perennia-web
+
+[Install]
+WantedBy=multi-user.target

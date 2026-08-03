@@ -32,8 +32,12 @@ class Settings:
     # secret is ever allowed to live under here.
     PUBLIC_DIR: Path = Path(_get("PUBLIC_DIR", str(BASE_DIR / "public")))
 
-    PORT: int = int(_get("PORT", "8000"))
-    HOST: str = _get("HOST", "127.0.0.1")
+    PORT: int = int(_get("PORT", "443"))
+    HOST: str = _get("HOST", "0.0.0.0")
+
+    # SSL/TLS Certificate paths (HTTPS)
+    SSL_CERT_FILE: str = _get("SSL_CERT_FILE", str(BASE_DIR / "certs" / "server.crt"))
+    SSL_KEY_FILE: str = _get("SSL_KEY_FILE", str(BASE_DIR / "certs" / "server.key"))
 
     # Comma-separated list of origins allowed to call the API. Same-origin
     # browser requests don't need this, but keep it explicit rather than "*".
