@@ -7,6 +7,7 @@ instead of silently running insecurely.
 import os
 import sys
 from pathlib import Path
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from dotenv import load_dotenv
 
@@ -96,3 +97,19 @@ class Settings:
 settings = Settings()
 settings.DATA_DIR.mkdir(parents=True, exist_ok=True)
 (settings.PUBLIC_DIR / "static" / "images").mkdir(parents=True, exist_ok=True)
+
+# Fail fast at startup rather than on the first /api/chat or /api/appointment
+# request. This also catches the case where the IANA tz database itself is
+# missing (e.g. some minimal/Windows Python installs) — the "tzdata" package
+# in requirements.txt covers that; if this still fails after installing
+# dependencies, APPT_TIMEZONE in .env is misconfigured.
+try:
+    ZoneInfo(settings.APPT_TIMEZONE)
+except ZoneInfoNotFoundError:
+    print(
+        f"FATAL: APPT_TIMEZONE={settings.APPT_TIMEZONE!r} could not be loaded. "
+        f"Either it is not a valid IANA timezone name, or the tz database is "
+        f"missing from this Python install (run: pip install tzdata).",
+        file=sys.stderr,
+    )
+    sys.exit(1)
