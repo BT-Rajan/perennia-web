@@ -97,20 +97,21 @@
       }
     }
 
-    /* ── Top nav (Our Work / Contact Us) — mirrors lang-bar, opposite side ── */
+    /* ── Top nav (Our Work / Contact Us) — right side, stacked under the
+         lang-bar so both corner groups share the same edge ── */
     .nav-bar {
       position: fixed;
-      top: 20px;
-      left: 20px;
+      top: 64px;
+      right: 20px;
       z-index: 200;
       display: flex;
       gap: 8px;
-      transition: left 0.3s, right 0.3s;
+      transition: right 0.3s, left 0.3s;
     }
-    [dir="rtl"] .nav-bar { left: auto; right: 20px; }
+    [dir="rtl"] .nav-bar { right: auto; left: 20px; }
     @media (max-width: 640px) {
-      .nav-bar { top: 12px; left: 12px; }
-      [dir="rtl"] .nav-bar { left: auto; right: 12px; }
+      .nav-bar { top: 54px; right: 12px; }
+      [dir="rtl"] .nav-bar { right: auto; left: 12px; }
     }
     .nav-link {
       background: rgba(255,255,255,0.09);
@@ -461,14 +462,14 @@
     /* ── Tagline ── */
     .tagline-wrap {
       text-align: center;
-      margin-top: 80px;
+      margin-top: 96px;
       margin-bottom: 2rem;
       width: 100%;
     }
     
     @media (max-width: 640px) {
       .tagline-wrap {
-        margin-top: 60px;
+        margin-top: 92px;
         margin-bottom: 1.5rem;
       }
     }
@@ -1126,8 +1127,11 @@ function checkAvatar() {
       if (i >= candidates.length) { aiAvatarSrc = null; resolve(); return; }
       const src = candidates[i++] + '?t=' + Date.now();
       const img = new Image();
-      img.onload  = () => { aiAvatarSrc = src; resolve(); };
-      img.onerror = tryNext;
+      let settled = false;
+      const advance = (fn) => { if (settled) return; settled = true; fn(); };
+      const timeout = setTimeout(() => advance(tryNext), 3000);
+      img.onload  = () => advance(() => { clearTimeout(timeout); aiAvatarSrc = src; resolve(); });
+      img.onerror = () => advance(() => { clearTimeout(timeout); tryNext(); });
       img.src = src;
     };
     tryNext();
@@ -1148,7 +1152,10 @@ let siteConfig = null;
 
 async function loadSiteConfig() {
   try {
-    const res = await fetch('/api/landing-config');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    const res = await fetch('/api/landing-config', { signal: controller.signal });
+    clearTimeout(timeout);
     if (res.ok) siteConfig = await res.json();
   } catch (e) { /* keep using COPY fallbacks */ }
 }
@@ -1535,12 +1542,26 @@ async function submitBooking() {
 }
 
 // ── Input auto-resize ─────────────────────────────────────
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   initThemeButton();
-  await Promise.all([checkAvatar(), loadSiteConfig()]);
+
+  // ── Render immediately with defaults so the page never sits blank
+  //    waiting on the network. The avatar probe and the site-config fetch
+  //    both run in the background and simply refresh the UI in place
+  //    whenever they resolve — a slow or unreachable server no longer
+  //    delays first paint. ──
   renderUI();
-  const welcomeHeading = L(`welcomeText-${lang === 'ar' ? 'ar' : 'en'}`, '');
-  addMsg('ai', welcomeHeading ? `${welcomeHeading} — ${COPY[lang].welcome}` : COPY[lang].welcome);
+  addMsg('ai', COPY[lang].welcome);
+
+  loadSiteConfig().then(() => {
+    renderUI();
+    const welcomeHeading = L(`welcomeText-${lang === 'ar' ? 'ar' : 'en'}`, '');
+    if (welcomeHeading) {
+      const firstMsg = document.querySelector('#messages .msg.ai .bubble');
+      if (firstMsg) firstMsg.textContent = `${welcomeHeading} — ${COPY[lang].welcome}`;
+    }
+  });
+  checkAvatar(); // updates aiAvatarSrc for subsequent messages once it resolves
 
   if (new URLSearchParams(location.search).get('book') === '1') {
     openBooking();

@@ -60,6 +60,12 @@
       backdrop-filter: blur(24px);
       padding: 2.5rem 2.25rem;
     }
+    @media (max-width: 640px) {
+      header { padding: 14px 16px; }
+      .bar { flex-wrap: wrap; justify-content: flex-end; }
+      main { padding: 1.25rem 1rem 2rem; }
+      .card { padding: 1.5rem 1.35rem; border-radius: 16px; }
+    }
     h1 {
       font-family: var(--font-en-display); font-size: clamp(1.7rem, 4vw, 2.5rem);
       font-weight: 600; color: #16233f; margin-bottom: 1.1rem; letter-spacing: -0.01em;
