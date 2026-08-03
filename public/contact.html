@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Contact Us | PERENNIA</title>
+  <meta name="description" content="Perennia — contact us.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    :root {
+      --navy-1: #000e28; --navy-2: #001030; --navy-3: #041a3e; --navy-4: #05214b;
+      --navy-5: #0a2d5e; --navy-6: #123870; --gold: #d0a030;
+      --gold-dim: rgba(208,160,48,0.16); --gold-border: rgba(208,160,48,0.30);
+      --font-en-display: 'Cormorant Garamond', Georgia, serif;
+      --font-en: 'Inter', system-ui, sans-serif;
+      --font-ar: 'Noto Kufi Arabic', 'Arial Unicode MS', sans-serif;
+    }
+    body {
+      min-height: 100%; font-family: var(--font-en); color: #16233f;
+      background:
+        radial-gradient(ellipse 100% 55% at 50% -5%, rgba(208,160,48,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 70% at 15% 85%, rgba(200,220,245,0.55) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 70% at 88% 15%, rgba(180,205,235,0.45) 0%, transparent 50%),
+        linear-gradient(160deg, #f7f9fc 0%, #f2f6fb 20%, #eef3fa 40%, #e9f0f9 60%, #e3edf8 80%, #dbe7f5 100%);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+      display: flex; flex-direction: column;
+    }
+    #bg-tint { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0; transition: opacity .3s; }
+    header {
+      position: relative; z-index: 1;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 24px; flex-wrap: wrap; gap: 10px;
+    }
+    [dir="rtl"] header { flex-direction: row-reverse; }
+    .brand-name {
+      font-family: var(--font-en-display); font-size: 1.15rem; font-weight: 700;
+      letter-spacing: 0.03em; color: #16233f; text-decoration: none;
+    }
+    [dir="rtl"] .brand-name { font-family: var(--font-ar); font-weight: 600; }
+    .bar { display: flex; gap: 8px; align-items: center; }
+    .pill-btn, .pill-link {
+      background: rgba(20,40,80,0.06); border: 1px solid rgba(20,40,80,0.14);
+      color: rgba(22,35,63,0.65); font-family: inherit; font-size: 11.5px; font-weight: 600;
+      letter-spacing: 0.05em; padding: 7px 15px; border-radius: 100px; cursor: pointer;
+      text-decoration: none; white-space: nowrap; transition: all .18s;
+    }
+    [dir="rtl"] .pill-btn, [dir="rtl"] .pill-link { font-family: var(--font-ar); }
+    .pill-btn:hover, .pill-link:hover { background: var(--gold-dim); border-color: var(--gold-border); color: #a3781f; }
+    main { position: relative; z-index: 1; flex: 1; display: flex; justify-content: center; padding: 2rem 1.5rem 3rem; }
+    .card {
+      width: 100%; max-width: 640px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.80) 0%, rgba(220,235,250,0.55) 50%, rgba(255,255,255,0.70) 100%);
+      border: 1px solid rgba(20,40,80,0.10); border-radius: 20px;
+      box-shadow: 0 0 0 1px rgba(201,162,39,0.10), 0 8px 32px rgba(30,60,110,0.12);
+      backdrop-filter: blur(24px);
+      padding: 2.5rem 2.25rem;
+    }
+    h1 {
+      font-family: var(--font-en-display); font-size: clamp(1.7rem, 4vw, 2.5rem);
+      font-weight: 600; color: #16233f; margin-bottom: 1.1rem; letter-spacing: -0.01em;
+    }
+    [dir="rtl"] h1 { font-family: var(--font-ar); font-weight: 600; }
+    .divider { width: 44px; height: 1.5px; background: linear-gradient(90deg, var(--gold), transparent); margin-bottom: 1.4rem; }
+    [dir="rtl"] .divider { background: linear-gradient(270deg, var(--gold), transparent); }
+    .intro { font-size: 15px; line-height: 1.85; color: rgba(22,35,63,0.82); margin-bottom: 1.75rem; white-space: pre-line; }
+    .details { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1.75rem; }
+    .detail-row { display: flex; align-items: center; gap: 12px; }
+    [dir="rtl"] .detail-row { flex-direction: row-reverse; }
+    .detail-icon {
+      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      background: var(--gold-dim); border: 1px solid var(--gold-border);
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .detail-text { font-size: 14px; color: rgba(22,35,63,0.85); }
+    .detail-text a { color: rgba(22,35,63,0.85); text-decoration: none; }
+    .detail-text a:hover { color: #a3781f; }
+    .book-cta {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--gold); color: #fff; border: none; border-radius: 100px;
+      font-family: inherit; font-size: 13.5px; font-weight: 700; padding: 11px 22px;
+      cursor: pointer; text-decoration: none; transition: background .18s;
+    }
+    .book-cta:hover { background: #b8881a; }
+    footer { position: relative; z-index: 1; text-align: center; padding: 18px; font-size: 10.5px; color: rgba(22,35,63,0.35); letter-spacing: 0.06em; }
+  </style>
+</head>
+<body>
+  <div id="bg-tint"></div>
+  <header>
+    <a class="brand-name" id="brand-name" href="/">PERENNIA</a>
+    <div class="bar">
+      <a class="pill-link" id="nav-home" href="/">Home</a>
+      <a class="pill-link" id="nav-work" href="/our-work">Our Work</a>
+      <button class="pill-btn" id="lang-btn" onclick="toggleLang()">AR | عربي</button>
+    </div>
+  </header>
+  <main>
+    <div class="card">
+      <h1 id="page-title">Contact Us</h1>
+      <div class="divider"></div>
+      <div class="intro" id="page-intro">Loading…</div>
+      <div class="details" id="details"></div>
+      <a class="book-cta" id="book-cta" href="/?book=1">📅 <span id="book-cta-label">Book a call</span></a>
+    </div>
+  </main>
+  <footer id="site-footer">© 2024 PERENNIA · بيرينيا</footer>
+
+  <script>
+    let lang = 'en';
+    let siteConfig = null;
+
+    function L(key, fallback) {
+      const v = siteConfig?.landing?.[key];
+      return (v !== undefined && v !== null && v !== '') ? v : fallback;
+    }
+    function C(key, fallback) {
+      const v = siteConfig?.contact?.[key];
+      return (v !== undefined && v !== null && v !== '') ? v : fallback;
+    }
+
+    function applyBackgroundTint() {
+      const color = siteConfig?.landing?.backgroundColor;
+      const tint = document.getElementById('bg-tint');
+      if (color) { tint.style.background = color; tint.style.opacity = '0.20'; }
+      else { tint.style.opacity = '0'; }
+    }
+
+    function render() {
+      const isAr = lang === 'ar';
+      const suf = isAr ? 'ar' : 'en';
+      document.documentElement.lang = lang;
+      document.documentElement.dir = isAr ? 'rtl' : 'ltr';
+
+      applyBackgroundTint();
+      document.getElementById('brand-name').textContent = L(`brandName-${suf}`, isAr ? 'بيرينيا' : 'PERENNIA');
+      document.getElementById('nav-home').textContent = isAr ? 'الرئيسية' : 'Home';
+      document.getElementById('nav-work').textContent = L(`navOurWork-${suf}`, isAr ? 'أعمالنا' : 'Our Work');
+      document.getElementById('nav-work').href = L('ourWorkUrl', '') || '/our-work';
+      document.getElementById('lang-btn').textContent = isAr
+        ? L('langToggleFromAr', 'EN | English')
+        : L('langToggleFromEn', 'AR | عربي');
+      document.getElementById('site-footer').textContent = L(`footerText-${suf}`, '© 2024 PERENNIA · بيرينيا');
+      document.getElementById('book-cta-label').textContent = L(`bookBtn-${suf}`, isAr ? 'احجز مكالمة' : 'Book a call');
+
+      const title = C(`ct-title-${suf}`, isAr ? 'تواصل معنا' : 'Contact Us');
+      document.getElementById('page-title').textContent = title;
+      document.title = title + ' | PERENNIA';
+      document.getElementById('page-intro').textContent = C(`ct-intro-${suf}`, '');
+
+      const email = C('ct-email', '');
+      const phone = C('ct-phone', '');
+      const addr = C(`ct-addr-${suf}`, '');
+      const rows = [];
+      if (email) rows.push({ icon: '✉️', html: `<a href="mailto:${email}">${email}</a>` });
+      if (phone) rows.push({ icon: '📞', html: `<a href="tel:${phone.replace(/\s+/g, '')}">${phone}</a>` });
+      if (addr) rows.push({ icon: '📍', html: addr });
+
+      const detailsEl = document.getElementById('details');
+      detailsEl.innerHTML = '';
+      rows.forEach(r => {
+        const row = document.createElement('div');
+        row.className = 'detail-row';
+        row.innerHTML = `<div class="detail-icon">${r.icon}</div><div class="detail-text">${r.html}</div>`;
+        detailsEl.appendChild(row);
+      });
+    }
+
+    function toggleLang() {
+      lang = lang === 'en' ? 'ar' : 'en';
+      render();
+    }
+
+    (async () => {
+      try {
+        const res = await fetch('/api/landing-config');
+        if (res.ok) siteConfig = await res.json();
+      } catch (e) { /* fall back to defaults baked into render() */ }
+      render();
+    })();
+  </script>
+</body>
+</html>

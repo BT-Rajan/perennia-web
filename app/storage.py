@@ -42,14 +42,90 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "ct-phone": "+965 0000 0000",
         "ct-addr-en": "Kuwait",
         "ct-addr-ar": "الكويت",
+        "ct-title-en": "Contact Us",
+        "ct-title-ar": "تواصل معنا",
+        "ct-intro-en": "We'd love to hear from you. Reach out any time and our team will get back to you shortly.",
+        "ct-intro-ar": "يسعدنا تواصلك معنا في أي وقت، وسيقوم فريقنا بالرد عليك في أقرب وقت ممكن.",
     },
+    # Every visible string on the public landing page lives here so an admin
+    # can edit it without touching code. The frontend fetches this via
+    # GET /api/landing-config; the values below are only used until an admin
+    # saves their own (or if the fetch ever fails).
     "landing": {
-        "welcomeText-en": "Welcome to Perennia",
-        "welcomeText-ar": "مرحبا بك في بيرينيا",
+        "brandName-en": "PERENNIA",
+        "brandName-ar": "بيرينيا",
+        "showLogo": False,  # top-left image logo hidden by default; brand name text used instead
+        "welcomeText-en": "Welcome",
+        "welcomeText-ar": "أهلاً بك",
         "tagline-en": "Visit our V-Lounge for more",
-        "tagline-ar": "زر V-Lounge الخاص بنا لمزيد من المعلومات",
-        "ourWorkUrl": "",
-        "contactUrl": "",
+        "tagline-ar": "زوروا V-Lounge الخاص بنا لمزيد من المعلومات",
+        "subHeading-en": "AI-POWERED TECHNOLOGY & INNOVATION",
+        "subHeading-ar": "تكنولوجيا وابتكار مدعومة بالذكاء الاصطناعي",
+        "chatHint-en": "Tap to start chatting",
+        "chatHint-ar": "اضغط لبدء المحادثة",
+        "placeholder-en": "Ask about our solutions, products, or anything…",
+        "placeholder-ar": "اسألني عن حلولنا أو منتجاتنا أو أي شيء آخر…",
+        "navOurWork-en": "Our Work",
+        "navOurWork-ar": "أعمالنا",
+        "navContact-en": "Contact Us",
+        "navContact-ar": "تواصل معنا",
+        "bookBtn-en": "Book a call",
+        "bookBtn-ar": "احجز مكالمة",
+        # Shown on the button itself — it's a toggle, so its label is always
+        # the *other* language's name for itself.
+        "langToggleFromEn": "AR | عربي",
+        "langToggleFromAr": "EN | English",
+        "footerText-en": "© 2024 PERENNIA · بيرينيا",
+        "footerText-ar": "© 2024 بيرينيا · PERENNIA",
+        "backgroundColor": "#001030",
+        "chips-en": [
+            "What does Perennia do?",
+            "Tell me about your products",
+            "Which industries do you serve?",
+            "What makes you different?",
+        ],
+        "chips-ar": [
+            "ما الذي تقدمه بيرينيا؟",
+            "أخبرني عن منتجاتكم",
+            "ما القطاعات التي تخدمونها؟",
+            "ما الذي يميزكم؟",
+        ],
+        "faq-en": [
+            "Tell me about the company",
+            "What services do you offer?",
+            "How to contact you?",
+        ],
+        "faq-ar": [
+            "أخبرني عن الشركة",
+            "ما الخدمات التي تقدمونها؟",
+            "كيف يمكنني التواصل معكم؟",
+        ],
+        "ourWorkUrl": "",  # if set, nav link opens this external URL instead of the built-in /our-work page
+        "contactUrl": "",  # same, for /contact-us
+    },
+    # Content for the standalone /our-work page.
+    "pages": {
+        "ourWork-title-en": "Our Work",
+        "ourWork-title-ar": "أعمالنا",
+        "ourWork-body-en": (
+            "We build AI-powered solutions across four areas: intelligent "
+            "business tools, workflow automation, digital platforms, and "
+            "personal productivity assistants. Every engagement starts with "
+            "understanding the problem, not the technology."
+        ),
+        "ourWork-body-ar": (
+            "نصمم حلولاً مدعومة بالذكاء الاصطناعي في أربعة مجالات: أدوات "
+            "أعمال ذكية، أتمتة سير العمل، منصات رقمية، ومساعدات إنتاجية "
+            "شخصية. تبدأ كل مبادرة بفهم المشكلة أولاً، لا بالتقنية."
+        ),
+    },
+    # Google Calendar sync for appointment bookings. Configured here from the
+    # admin panel instead of only via .env — the service-account key is
+    # encrypted at rest the same way the LLM API key is (see security.py),
+    # and is never sent back to the browser once saved.
+    "calendar": {
+        "calendarId": "",
+        "serviceAccountJsonEncrypted": "",
     },
     "booking": {
         "promptsEn": [
@@ -80,6 +156,22 @@ def _atomic_write_json(path: Path, data: Any) -> None:
     os.replace(tmp_path, path)  # atomic on POSIX
 
 
+def _merge_with_defaults(defaults: dict[str, Any], data: dict[str, Any]) -> dict[str, Any]:
+    """One level of dict-in-dict merging: a saved config missing a brand-new
+    nested key (e.g. a new "landing" field added after that config was last
+    saved) still gets that key's default, instead of the whole "landing"
+    dict being silently replaced by the older, incomplete saved one."""
+    merged = dict(defaults)
+    for key, value in data.items():
+        if key in merged and isinstance(merged[key], dict) and isinstance(value, dict):
+            nested = dict(merged[key])
+            nested.update(value)
+            merged[key] = nested
+        else:
+            merged[key] = value
+    return merged
+
+
 def load_config() -> dict[str, Any]:
     with _lock:
         if not CONFIG_PATH.exists():
@@ -89,9 +181,7 @@ def load_config() -> dict[str, Any]:
                 data = json.load(f)
         except (json.JSONDecodeError, OSError):
             return dict(DEFAULT_CONFIG)
-        merged = dict(DEFAULT_CONFIG)
-        merged.update(data)
-        return merged
+        return _merge_with_defaults(DEFAULT_CONFIG, data)
 
 
 def save_config(config: dict[str, Any]) -> None:
@@ -106,6 +196,18 @@ def get_decrypted_api_key(config: dict[str, Any] | None = None) -> str:
 
 def set_api_key(config: dict[str, Any], plaintext_key: str) -> dict[str, Any]:
     config["apiKeyEncrypted"] = encrypt_secret(plaintext_key)
+    return config
+
+
+def get_decrypted_calendar_service_account(config: dict[str, Any] | None = None) -> str:
+    config = config or load_config()
+    return decrypt_secret((config.get("calendar") or {}).get("serviceAccountJsonEncrypted", ""))
+
+
+def set_calendar_service_account(config: dict[str, Any], plaintext_json: str) -> dict[str, Any]:
+    calendar_cfg = dict(config.get("calendar") or {})
+    calendar_cfg["serviceAccountJsonEncrypted"] = encrypt_secret(plaintext_json)
+    config["calendar"] = calendar_cfg
     return config
 
 

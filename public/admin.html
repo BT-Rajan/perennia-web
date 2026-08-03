@@ -276,9 +276,21 @@
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         Chat Knowledge
       </a>
+      <a class="sb-item" data-p="site" onclick="go(this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16v16H4z"/><path d="M4 9h16M9 20V9"/></svg>
+        Site Content
+      </a>
+      <a class="sb-item" data-p="ourwork" onclick="go(this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+        Our Work Page
+      </a>
       <a class="sb-item" data-p="contact" onclick="go(this)">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.15 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.07 1.17h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.09 8.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 21 16z"/></svg>
         Contact Details
+      </a>
+      <a class="sb-item" data-p="calendar" onclick="go(this)">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Google Calendar
       </a>
       <div class="sb-section">Assets</div>
       <a class="sb-item" data-p="logo" onclick="go(this)">
@@ -526,6 +538,117 @@
         </button>
       </div>
 
+      <!-- SITE CONTENT -->
+      <div class="panel" id="p-site">
+        <div class="ph"><h1>Site Content</h1><p>Every string visible on the public homepage — nothing here is hardcoded, so you can rewrite any of it and it goes live immediately.</p></div>
+
+        <div class="card">
+          <div class="card-lbl">Brand & Welcome</div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Brand name <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-brandName-en" placeholder="PERENNIA"></div>
+            <div class="frow"><label class="flabel">Brand name <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-brandName-ar" dir="rtl" placeholder="بيرينيا"></div>
+          </div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Welcome heading <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-welcomeText-en" placeholder="Welcome"></div>
+            <div class="frow"><label class="flabel">Welcome heading <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-welcomeText-ar" dir="rtl" placeholder="أهلاً بك"></div>
+          </div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Tagline <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-tagline-en" placeholder="Visit our V-Lounge for more"></div>
+            <div class="frow"><label class="flabel">Tagline <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-tagline-ar" dir="rtl"></div>
+          </div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Sub-heading <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-subHeading-en"></div>
+            <div class="frow"><label class="flabel">Sub-heading <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-subHeading-ar" dir="rtl"></div>
+          </div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Chat hint <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-chatHint-en" placeholder="Tap to start chatting"></div>
+            <div class="frow"><label class="flabel">Chat hint <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-chatHint-ar" dir="rtl"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-lbl">Navigation & Buttons</div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">"Our Work" link label <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-navOurWork-en"></div>
+            <div class="frow"><label class="flabel">"Our Work" link label <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-navOurWork-ar" dir="rtl"></div>
+          </div>
+          <div class="frow"><label class="flabel">"Our Work" external URL (optional — overrides the built-in page)</label><input type="url" class="finput" id="ld-ourWorkUrl" placeholder="https://…"></div>
+          <hr class="div">
+          <div class="twin">
+            <div class="frow"><label class="flabel">"Contact Us" link label <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-navContact-en"></div>
+            <div class="frow"><label class="flabel">"Contact Us" link label <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-navContact-ar" dir="rtl"></div>
+          </div>
+          <div class="frow"><label class="flabel">"Contact Us" external URL (optional — overrides the built-in page)</label><input type="url" class="finput" id="ld-contactUrl" placeholder="https://…"></div>
+          <hr class="div">
+          <div class="twin">
+            <div class="frow"><label class="flabel">"Book a call" button <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-bookBtn-en"></div>
+            <div class="frow"><label class="flabel">"Book a call" button <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-bookBtn-ar" dir="rtl"></div>
+          </div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Language button (shown while site is in EN)</label><input type="text" class="finput" id="ld-langToggleFromEn" placeholder="AR | عربي"></div>
+            <div class="frow"><label class="flabel">Language button (shown while site is in AR)</label><input type="text" class="finput" id="ld-langToggleFromAr" placeholder="EN | English"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-lbl">Chat Input & Quick Questions</div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Input placeholder <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-placeholder-en"></div>
+            <div class="frow"><label class="flabel">Input placeholder <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-placeholder-ar" dir="rtl"></div>
+          </div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Quick-question chips <span class="badge ben">EN</span></label><textarea class="fta" id="ld-chips-en" style="min-height:88px"></textarea><p class="fhint">One per line, up to 10.</p></div>
+            <div class="frow"><label class="flabel">Quick-question chips <span class="badge bar">AR</span></label><textarea class="fta" id="ld-chips-ar" dir="rtl" style="min-height:88px"></textarea></div>
+          </div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">FAQ sidebar items <span class="badge ben">EN</span></label><textarea class="fta" id="ld-faq-en" style="min-height:88px"></textarea><p class="fhint">One per line — shown as buttons and sent as-is when clicked.</p></div>
+            <div class="frow"><label class="flabel">FAQ sidebar items <span class="badge bar">AR</span></label><textarea class="fta" id="ld-faq-ar" dir="rtl" style="min-height:88px"></textarea></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-lbl">Footer & Appearance</div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Footer text <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-footerText-en"></div>
+            <div class="frow"><label class="flabel">Footer text <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-footerText-ar" dir="rtl"></div>
+          </div>
+          <div class="frow">
+            <label class="flabel">Background tint color</label>
+            <div style="display:flex; gap:0.6rem; align-items:center">
+              <input type="color" id="ld-backgroundColor-picker" style="width:44px; height:38px; padding:2px; border:1.5px solid var(--border); border-radius:var(--radius); cursor:pointer" oninput="document.getElementById('ld-backgroundColor').value=this.value">
+              <input type="text" class="finput" id="ld-backgroundColor" placeholder="#001030" style="max-width:160px" oninput="syncColorPicker(this.value)">
+              <button class="btn-2" type="button" onclick="document.getElementById('ld-backgroundColor').value='';toast('Cleared — using the default brand background','ok')">Reset to default</button>
+            </div>
+            <p class="fhint">Washes a subtle tint of this color over the homepage background. Leave blank for the default brand gradient.</p>
+          </div>
+        </div>
+
+        <button class="btn-save" onclick="saveSite()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Save Site Content
+        </button>
+      </div>
+
+      <!-- OUR WORK PAGE -->
+      <div class="panel" id="p-ourwork">
+        <div class="ph"><h1>Our Work Page</h1><p>Content shown at <code>/our-work</code>. Leave the external URL above blank to use this built-in page.</p></div>
+        <div class="card">
+          <div class="card-lbl">Page Content</div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Title <span class="badge ben">EN</span></label><input type="text" class="finput" id="pg-ourWork-title-en"></div>
+            <div class="frow"><label class="flabel">Title <span class="badge bar">AR</span></label><input type="text" class="finput" id="pg-ourWork-title-ar" dir="rtl"></div>
+          </div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Body <span class="badge ben">EN</span></label><textarea class="fta" id="pg-ourWork-body-en" style="min-height:220px"></textarea></div>
+            <div class="frow"><label class="flabel">Body <span class="badge bar">AR</span></label><textarea class="fta" id="pg-ourWork-body-ar" dir="rtl" style="min-height:220px"></textarea></div>
+          </div>
+        </div>
+        <button class="btn-save" onclick="saveOurWork()">
+          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Save Our Work Page
+        </button>
+      </div>
+
       <!-- ASSISTANT PERSONA & FILES -->
       <div class="panel" id="p-assistant">
         <div class="ph"><h1>Assistant Persona &amp; Knowledge Files</h1><p>Give the chat assistant a face, a tone of voice, and extra documents to draw on when answering visitors.</p></div>
@@ -579,7 +702,18 @@
 
       <!-- CONTACT -->
       <div class="panel" id="p-contact">
-        <div class="ph"><h1>Contact Details</h1><p>Shared with visitors who ask how to reach Perennia.</p></div>
+        <div class="ph"><h1>Contact Details</h1><p>Shared with visitors who ask how to reach Perennia, and shown on the <code>/contact-us</code> page.</p></div>
+        <div class="card">
+          <div class="card-lbl">Contact Us Page</div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Page title <span class="badge ben">EN</span></label><input type="text" class="finput" id="ct-title-en"></div>
+            <div class="frow"><label class="flabel">Page title <span class="badge bar">AR</span></label><input type="text" class="finput" id="ct-title-ar" dir="rtl"></div>
+          </div>
+          <div class="twin">
+            <div class="frow"><label class="flabel">Intro text <span class="badge ben">EN</span></label><textarea class="fta" id="ct-intro-en" style="min-height:70px"></textarea></div>
+            <div class="frow"><label class="flabel">Intro text <span class="badge bar">AR</span></label><textarea class="fta" id="ct-intro-ar" dir="rtl" style="min-height:70px"></textarea></div>
+          </div>
+        </div>
         <div class="card">
           <div class="card-lbl">Contact Information</div>
           <div class="frow"><label class="flabel">Email</label><input type="email" class="finput" id="ct-email" placeholder="info@perennia.com"></div>
@@ -593,6 +727,65 @@
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           Save Contact Details
         </button>
+      </div>
+
+      <!-- GOOGLE CALENDAR -->
+      <div class="panel" id="p-calendar">
+        <div class="ph"><h1>Google Calendar</h1><p>Sync appointment bookings to a shared Google Calendar using a service account — no OAuth login required.</p></div>
+
+        <div class="sum-bar">
+          <div><div class="sum-text" id="cal-sum">Not configured</div><div class="sum-sub">Current configuration</div></div>
+          <span class="pill pill-warn" id="cal-pill"><span class="dot"></span> Not configured</span>
+        </div>
+
+        <div class="card">
+          <div class="card-lbl">① Create a Service Account</div>
+          <div class="info">
+            In <a href="https://console.cloud.google.com/iam-admin/serviceaccounts" target="_blank">Google Cloud Console</a>,
+            create a service account, enable the <strong>Google Calendar API</strong> for the project, then create a JSON key
+            for that account and download it. Open your target calendar's <strong>Settings and sharing</strong>, and under
+            "Share with specific people", add the service account's email (ends in <code>…iam.gserviceaccount.com</code>)
+            with <strong>"Make changes to events"</strong> permission.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-lbl">② Calendar & Credentials</div>
+          <div class="frow">
+            <label class="flabel">Calendar ID</label>
+            <input type="text" class="finput" id="cal-id" placeholder="your-calendar-id@group.calendar.google.com">
+            <p class="fhint">Found under Settings and sharing → Integrate calendar → Calendar ID.</p>
+          </div>
+          <div class="frow">
+            <label class="flabel">Service Account JSON Key</label>
+            <textarea class="fta" id="cal-json" style="min-height:120px; font-family:monospace; font-size:0.76rem" placeholder='Paste the full contents of the downloaded JSON key file, e.g. { "type": "service_account", … }'></textarea>
+            <p class="fhint" id="cal-json-hint">Encrypted on the server and never shown here again after saving. Leave blank to keep the currently saved key.</p>
+          </div>
+        </div>
+
+        <div class="btn-row" style="margin-bottom:1.25rem">
+          <button class="btn-save" onclick="saveCalendar()">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+            Save
+          </button>
+          <button class="btn-2" onclick="testCalendar()">Test Connection (read &amp; write)</button>
+          <button class="btn-2" onclick="clearCalendar()">Remove Credentials</button>
+        </div>
+
+        <div class="card" id="cal-test-result-card" style="display:none">
+          <div class="card-lbl">Last Test Result</div>
+          <div style="display:flex; gap:1.5rem; margin-bottom:0.85rem">
+            <span class="pill" id="cal-read-pill">Read access</span>
+            <span class="pill" id="cal-write-pill">Write access</span>
+          </div>
+          <p class="fhint" id="cal-test-message" style="font-size:0.78rem"></p>
+        </div>
+
+        <div class="info">
+          The write check creates a small test event exactly one year from today (so it can never collide with a real
+          booking) and deletes it immediately — this confirms the service account can actually create and remove events,
+          not just read the calendar.
+        </div>
       </div>
 
       <!-- LOGO UPLOAD -->
@@ -732,7 +925,7 @@ async function adminFetch(url, options = {}) {
 document.getElementById('lp').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
 
 // ── Navigation ────────────────────────────────────
-const TITLES = { dash:'Dashboard', ai:'Provider & Model', assistant:'Persona & Files', chat:'Chat Knowledge', contact:'Contact Details', logo:'Logo Upload', appt:'Appointments' };
+const TITLES = { dash:'Dashboard', ai:'Provider & Model', assistant:'Persona & Files', chat:'Chat Knowledge', site:'Site Content', ourwork:'Our Work Page', contact:'Contact Details', calendar:'Google Calendar', logo:'Logo Upload', appt:'Appointments' };
 
 function go(el) {
   event.preventDefault();
@@ -1096,7 +1289,13 @@ async function deleteKbFile(id) {
 }
 
 // ── Contact ───────────────────────────────────────
-const CT_DEFAULTS = { 'ct-email':'info@perennia.com', 'ct-phone':'+965 0000 0000', 'ct-addr-en':'Kuwait', 'ct-addr-ar':'الكويت' };
+const CT_DEFAULTS = {
+  'ct-email':'info@perennia.com', 'ct-phone':'+965 0000 0000',
+  'ct-addr-en':'Kuwait', 'ct-addr-ar':'الكويت',
+  'ct-title-en':'Contact Us', 'ct-title-ar':'تواصل معنا',
+  'ct-intro-en':"We'd love to hear from you. Reach out any time and our team will get back to you shortly.",
+  'ct-intro-ar':'يسعدنا تواصلك معنا في أي وقت، وسيقوم فريقنا بالرد عليك في أقرب وقت ممكن.',
+};
 
 function loadContact() {
   const saved = (serverConfig && serverConfig.contact) || {};
@@ -1111,6 +1310,169 @@ async function saveContact() {
     toast('✔ Contact details saved', 'ok');
   } catch (e) {
     toast(`✗ ${e.message}`, 'err');
+  }
+}
+
+// ── Site Content (every visible landing-page string) ──────────────
+const LD_STR_FIELDS = [
+  'brandName-en','brandName-ar','welcomeText-en','welcomeText-ar',
+  'tagline-en','tagline-ar','subHeading-en','subHeading-ar',
+  'chatHint-en','chatHint-ar','navOurWork-en','navOurWork-ar',
+  'navContact-en','navContact-ar','bookBtn-en','bookBtn-ar',
+  'langToggleFromEn','langToggleFromAr','footerText-en','footerText-ar',
+  'placeholder-en','placeholder-ar',
+];
+const LD_URL_FIELDS = ['ourWorkUrl', 'contactUrl'];
+const LD_LIST_FIELDS = ['chips-en', 'chips-ar', 'faq-en', 'faq-ar'];
+
+function syncColorPicker(hex) {
+  const picker = document.getElementById('ld-backgroundColor-picker');
+  if (/^#[0-9a-fA-F]{6}$/.test(hex)) picker.value = hex;
+}
+
+function loadSite() {
+  const landing = (serverConfig && serverConfig.landing) || {};
+  LD_STR_FIELDS.forEach(key => {
+    const el = document.getElementById(`ld-${key}`);
+    if (el) el.value = landing[key] || '';
+  });
+  LD_URL_FIELDS.forEach(key => {
+    const el = document.getElementById(`ld-${key}`);
+    if (el) el.value = landing[key] || '';
+  });
+  LD_LIST_FIELDS.forEach(key => {
+    const el = document.getElementById(`ld-${key}`);
+    if (el) el.value = Array.isArray(landing[key]) ? landing[key].join('\n') : '';
+  });
+  const color = landing.backgroundColor || '';
+  document.getElementById('ld-backgroundColor').value = color;
+  syncColorPicker(color || '#001030');
+}
+
+async function saveSite() {
+  const data = {};
+  LD_STR_FIELDS.forEach(key => { const el = document.getElementById(`ld-${key}`); if (el) data[key] = el.value; });
+  LD_URL_FIELDS.forEach(key => { const el = document.getElementById(`ld-${key}`); if (el) data[key] = el.value; });
+  LD_LIST_FIELDS.forEach(key => {
+    const el = document.getElementById(`ld-${key}`);
+    if (el) data[key] = el.value.split('\n').map(s => s.trim()).filter(Boolean);
+  });
+  data.backgroundColor = document.getElementById('ld-backgroundColor').value.trim();
+  try {
+    await patchConfig({ landing: data });
+    toast('✔ Site content saved', 'ok');
+  } catch (e) {
+    toast(`✗ ${e.message}`, 'err');
+  }
+}
+
+// ── Our Work page ──────────────────────────────────────────────────
+const PG_FIELDS = ['ourWork-title-en', 'ourWork-title-ar', 'ourWork-body-en', 'ourWork-body-ar'];
+
+function loadOurWork() {
+  const pages = (serverConfig && serverConfig.pages) || {};
+  PG_FIELDS.forEach(key => {
+    const el = document.getElementById(`pg-${key}`);
+    if (el) el.value = pages[key] || '';
+  });
+}
+
+async function saveOurWork() {
+  const data = {};
+  PG_FIELDS.forEach(key => { const el = document.getElementById(`pg-${key}`); if (el) data[key] = el.value; });
+  try {
+    await patchConfig({ pages: data });
+    toast('✔ Our Work page saved', 'ok');
+  } catch (e) {
+    toast(`✗ ${e.message}`, 'err');
+  }
+}
+
+// ── Google Calendar ─────────────────────────────────────────────────
+function updateCalendarStatus(cfg) {
+  const cal = (cfg && cfg.calendar) || {};
+  const sum = document.getElementById('cal-sum');
+  const pill = document.getElementById('cal-pill');
+  if (cal.serviceAccountSet && cal.calendarId) {
+    sum.textContent = `Connected · ${cal.serviceAccountEmailHint || 'service account saved'}`;
+    pill.className = 'pill pill-ok';
+    pill.innerHTML = '<span class="dot"></span> Configured';
+  } else {
+    sum.textContent = 'No service account saved yet';
+    pill.className = 'pill pill-warn';
+    pill.innerHTML = '<span class="dot"></span> Not configured';
+  }
+}
+
+function loadCalendar() {
+  const cal = (serverConfig && serverConfig.calendar) || {};
+  document.getElementById('cal-id').value = cal.calendarId || '';
+  const jsonEl = document.getElementById('cal-json');
+  jsonEl.value = '';
+  jsonEl.dataset.changed = '0';
+  jsonEl.placeholder = cal.serviceAccountSet
+    ? `A key is already saved (${cal.serviceAccountEmailHint || 'service account'}) — leave blank to keep it, paste a new one to replace it.`
+    : 'Paste the full contents of the downloaded JSON key file, e.g. { "type": "service_account", … }';
+  updateCalendarStatus(serverConfig);
+  document.getElementById('cal-test-result-card').style.display = 'none';
+}
+
+document.getElementById('cal-json').addEventListener('input', function () { this.dataset.changed = '1'; });
+
+async function saveCalendar() {
+  const jsonEl = document.getElementById('cal-json');
+  const payload = { calendarId: document.getElementById('cal-id').value.trim() };
+  if (jsonEl.dataset.changed === '1' && jsonEl.value.trim()) {
+    payload.serviceAccountJson = jsonEl.value.trim();
+  }
+  try {
+    await patchConfig({ calendar: payload });
+    loadCalendar();
+    toast('✔ Calendar settings saved', 'ok');
+  } catch (e) {
+    toast(`✗ ${e.message}`, 'err');
+  }
+}
+
+async function clearCalendar() {
+  try {
+    await patchConfig({ calendar: { calendarId: '', clearServiceAccount: true } });
+    loadCalendar();
+    toast('Calendar credentials removed', 'ok');
+  } catch (e) {
+    toast(`✗ ${e.message}`, 'err');
+  }
+}
+
+async function testCalendar() {
+  const jsonEl = document.getElementById('cal-json');
+  const body = { calendarId: document.getElementById('cal-id').value.trim() };
+  if (jsonEl.dataset.changed === '1' && jsonEl.value.trim()) {
+    body.serviceAccountJson = jsonEl.value.trim();
+  } else if (!serverConfig?.calendar?.serviceAccountSet) {
+    toast('Paste the service account JSON first.', 'err');
+    return;
+  }
+  toast('Testing read & write access…');
+  const resultCard = document.getElementById('cal-test-result-card');
+  try {
+    const res = await adminFetch('/api/admin/calendar/test', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    resultCard.style.display = 'block';
+    const readPill = document.getElementById('cal-read-pill');
+    const writePill = document.getElementById('cal-write-pill');
+    readPill.className = 'pill ' + (data.readOk ? 'pill-ok' : 'pill-warn');
+    readPill.textContent = data.readOk ? '✔ Read access' : '✗ Read access';
+    writePill.className = 'pill ' + (data.writeOk ? 'pill-ok' : 'pill-warn');
+    writePill.textContent = data.writeOk ? '✔ Write access' : '✗ Write access';
+    document.getElementById('cal-test-message').textContent = data.message || '';
+    toast(data.ok ? '✔ Read and write access confirmed!' : `✗ ${data.message}`, data.ok ? 'ok' : 'err');
+  } catch (e) {
+    toast(`✗ ${e.message || 'Could not reach server.'}`, 'err');
   }
 }
 
@@ -1298,10 +1660,13 @@ async function init() {
   }
   loadAI();
   loadCK();
+  loadSite();
+  loadOurWork();
   loadTone();
   loadAvatarPreview();
   loadKbList();
   loadContact();
+  loadCalendar();
   loadLogos();
   loadAnalytics();
   loadAppointments();

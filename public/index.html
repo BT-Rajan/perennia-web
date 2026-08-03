@@ -97,6 +97,71 @@
       }
     }
 
+    /* ── Top nav (Our Work / Contact Us) — mirrors lang-bar, opposite side ── */
+    .nav-bar {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 200;
+      display: flex;
+      gap: 8px;
+      transition: left 0.3s, right 0.3s;
+    }
+    [dir="rtl"] .nav-bar { left: auto; right: 20px; }
+    @media (max-width: 640px) {
+      .nav-bar { top: 12px; left: 12px; }
+      [dir="rtl"] .nav-bar { left: auto; right: 12px; }
+    }
+    .nav-link {
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.7);
+      font-family: var(--font-en);
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      padding: 7px 15px;
+      border-radius: 100px;
+      cursor: pointer;
+      backdrop-filter: blur(16px);
+      transition: all 0.2s ease;
+      text-decoration: none;
+      white-space: nowrap;
+      display: inline-block;
+    }
+    [dir="rtl"] .nav-link { font-family: var(--font-ar); }
+    .nav-link:hover { background: var(--gold-dim); border-color: var(--gold-border); color: var(--gold); }
+    body.theme-light .nav-link { background: rgba(20,40,80,0.06); border-color: rgba(20,40,80,0.14); color: rgba(22,35,63,0.6); }
+    body.theme-light .nav-link:hover { background: var(--gold-dim); border-color: var(--gold-border); color: #a3781f; }
+
+    /* ── Optional admin-set background tint — sits above the base gradient,
+         below all content, so the brand palette stays intact underneath ── */
+    #bg-tint {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      opacity: 0; transition: opacity 0.3s ease;
+    }
+
+    /* ── Brand name (replaces the image logo when no logo is shown) ── */
+    .brand-name {
+      font-family: var(--font-en-display);
+      font-size: 1.15rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    [dir="rtl"] .brand-name { font-family: var(--font-ar); font-weight: 600; }
+    body.theme-light .brand-name { color: #16233f; }
+
+    /* ── Chat hint caption (e.g. "Tap to start chatting") ── */
+    .chat-hint {
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: rgba(255,255,255,0.38);
+      margin-top: 10px;
+    }
+    body.theme-light .chat-hint { color: rgba(22,35,63,0.42); }
+
     .theme-btn {
       background: rgba(255,255,255,0.09);
       border: 1px solid rgba(255,255,255,0.15);
@@ -900,6 +965,13 @@
 <script>(function(){try{if(localStorage.getItem('perennia_theme')==='dark'){document.body.classList.remove('theme-light');}}catch(e){}})();</script>
 
 
+  <div id="bg-tint"></div>
+
+  <nav class="nav-bar" id="nav-bar">
+    <a class="nav-link" id="nav-work" href="/our-work">Our Work</a>
+    <a class="nav-link" id="nav-contact" href="/contact-us">Contact Us</a>
+  </nav>
+
   <div class="lang-bar">
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light / dark">☀</button>
     <button class="chip" id="book-btn" onclick="openBooking()" style="white-space:nowrap">📅 <span id="book-btn-label">Book a call</span></button>
@@ -909,27 +981,15 @@
   <main>
     <div class="inner">
 
-      <!-- LOGO — both rendered at identical CSS height -->
-      <div class="logo-wrap">
-        <img class="logo-img" id="logo-en"
-             src="static/images/logo_en.png"
-             width="192" height="80"
-             alt="Perennia — Solving Today. Shaping Tomorrow."
-             style="display:block; image-rendering:-webkit-optimize-contrast;">
-        <img class="logo-img" id="logo-ar"
-             src="static/images/logo_ar.png"
-             width="171" height="80"
-             alt="بيرينيا — حلول اليوم. لصناعة الغد."
-             style="display:none; image-rendering:-webkit-optimize-contrast;">
-      </div>
-
       <!-- Tagline + Content Wrapper -->
       <div class="tagline-wrap">
+        <div class="brand-name" id="brand-name">PERENNIA</div>
         <div class="tagline-main">
           <span id="tagline-line1">Solving Today. </span><span class="gold" id="tagline-line2">Shaping Tomorrow.</span>
         </div>
         <div class="tagline-divider"></div>
         <div class="tagline-sub" id="tagline-sub">AI-POWERED TECHNOLOGY & INNOVATION</div>
+        <div class="chat-hint" id="chat-hint"></div>
       </div>
 
       <!-- Content with Image Sidebar -->
@@ -974,7 +1034,7 @@
     </div>
   </main>
 
-  <footer>© 2024 PERENNIA · بيرينيا</footer>
+  <footer id="site-footer">© 2024 PERENNIA · بيرينيا</footer>
 
   <script>
 const COPY = {
@@ -1080,33 +1140,68 @@ function scrollBottom() {
   el.scrollTop = el.scrollHeight;
 }
 
+// ── Site content fetched from the admin panel (GET /api/landing-config).
+//    COPY above is only ever used as a fallback: if this fetch fails, or
+//    an admin hasn't customized a given field yet, COPY's value is shown
+//    instead so the page never renders empty. ─────────────────────────
+let siteConfig = null;
+
+async function loadSiteConfig() {
+  try {
+    const res = await fetch('/api/landing-config');
+    if (res.ok) siteConfig = await res.json();
+  } catch (e) { /* keep using COPY fallbacks */ }
+}
+
+function L(key, fallback) {
+  const v = siteConfig?.landing?.[key];
+  return (v !== undefined && v !== null && v !== '') ? v : fallback;
+}
+
+function LL(key, fallback) {
+  const v = siteConfig?.landing?.[key];
+  return Array.isArray(v) && v.length ? v : fallback;
+}
+
+function applyBackgroundTint() {
+  const color = siteConfig?.landing?.backgroundColor;
+  const tint = document.getElementById('bg-tint');
+  if (color) {
+    tint.style.background = color;
+    tint.style.opacity = '0.30';
+  } else {
+    tint.style.opacity = '0';
+  }
+}
+
 function renderUI() {
   const c = COPY[lang];
   const isAr = lang === 'ar';
+  const suf = isAr ? 'ar' : 'en';
 
   document.documentElement.lang = lang;
   document.documentElement.dir  = isAr ? 'rtl' : 'ltr';
 
-  // ── Logo swap — served straight from the server; the admin panel
-  //    overwrites these same files on upload, so every visitor always
-  //    sees the current logo with no client-side state involved ──
-  const logoEn = document.getElementById('logo-en');
-  const logoAr = document.getElementById('logo-ar');
+  applyBackgroundTint();
 
-  if (isAr) {
-    logoEn.style.display = 'none';
-    logoAr.style.display = 'block';
-    logoAr.src = 'static/images/logo_ar.png?t=' + Math.floor(Date.now() / 60000);
-  } else {
-    logoAr.style.display = 'none';
-    logoEn.style.display = 'block';
-    logoEn.src = 'static/images/logo_en.png?t=' + Math.floor(Date.now() / 60000);
-  }
+  // ── Brand name (single instance — the image logo has been removed) ──
+  document.getElementById('brand-name').textContent = L(`brandName-${suf}`, isAr ? 'بيرينيا' : 'PERENNIA');
+
+  // ── Nav links: Our Work / Contact Us — an admin-set external URL
+  //    overrides the built-in page for that link ──
+  const navWork = document.getElementById('nav-work');
+  const navContact = document.getElementById('nav-contact');
+  navWork.textContent = L(`navOurWork-${suf}`, isAr ? 'أعمالنا' : 'Our Work');
+  navWork.href = L('ourWorkUrl', '') || '/our-work';
+  navContact.textContent = L(`navContact-${suf}`, isAr ? 'تواصل معنا' : 'Contact Us');
+  navContact.href = L('contactUrl', '') || '/contact-us';
 
   // ── Tagline swap ──
-  document.getElementById('tagline-line1').textContent = c.tagline[0];
-  document.getElementById('tagline-line2').textContent = c.tagline[1];
-  document.getElementById('tagline-sub').textContent = c.sub;
+  const taglineText = L(`tagline-${suf}`, '');
+  document.getElementById('tagline-line1').textContent = taglineText || c.tagline[0];
+  document.getElementById('tagline-line2').textContent = taglineText ? '' : c.tagline[1];
+  document.getElementById('tagline-sub').textContent = L(`subHeading-${suf}`, c.sub);
+  document.getElementById('chat-hint').textContent = L(`chatHint-${suf}`, '');
 
   // ── Image sidebar swap ──
   const imgEn = document.getElementById('sidebar-image-en');
@@ -1126,14 +1221,17 @@ function renderUI() {
   const h = document.getElementById('chat-header');
   h.innerHTML = c.header[0] + `<b>${c.header[1]}</b>` + c.header[2];
 
-  document.getElementById('input').placeholder = c.placeholder;
-  document.getElementById('lang-btn').textContent = c.toggle;
-  document.getElementById('book-btn-label').textContent = isAr ? 'احجز مكالمة' : 'Book a call';
+  document.getElementById('input').placeholder = L(`placeholder-${suf}`, c.placeholder);
+  document.getElementById('lang-btn').textContent = isAr
+    ? L('langToggleFromAr', c.toggle)
+    : L('langToggleFromEn', c.toggle);
+  document.getElementById('book-btn-label').textContent = L(`bookBtn-${suf}`, isAr ? 'احجز مكالمة' : 'Book a call');
+  document.getElementById('site-footer').textContent = L(`footerText-${suf}`, '© 2024 PERENNIA · بيرينيا');
 
   // Chips
   const chipsEl = document.getElementById('chips');
   chipsEl.innerHTML = '';
-  c.chips.forEach(text => {
+  LL(`chips-${suf}`, c.chips).forEach(text => {
     const btn = document.createElement('button');
     btn.className = 'chip';
     btn.textContent = text;
@@ -1145,7 +1243,9 @@ function renderUI() {
   document.getElementById('faq-title').textContent = c.faqTitle;
   const faqEl = document.getElementById('faq-list');
   faqEl.innerHTML = '';
-  c.faq.forEach(item => {
+  const faqItems = LL(`faq-${suf}`, null);
+  const faqSource = faqItems ? faqItems.map(q => ({ html: q, ask: q })) : c.faq;
+  faqSource.forEach(item => {
     const btn = document.createElement('button');
     btn.className = 'faq-item';
     btn.innerHTML = item.html;
@@ -1309,7 +1409,8 @@ function toggleLang() {
   inp.disabled = false;
   document.getElementById('messages').innerHTML = '';
   renderUI();
-  addMsg('ai', COPY[lang].welcome);
+  const welcomeHeading = L(`welcomeText-${lang === 'ar' ? 'ar' : 'en'}`, '');
+  addMsg('ai', welcomeHeading ? `${welcomeHeading} — ${COPY[lang].welcome}` : COPY[lang].welcome);
 }
 
 // ── Theme toggle (light default; dark still available) ────
@@ -1436,9 +1537,14 @@ async function submitBooking() {
 // ── Input auto-resize ─────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   initThemeButton();
-  await checkAvatar();
+  await Promise.all([checkAvatar(), loadSiteConfig()]);
   renderUI();
-  addMsg('ai', COPY[lang].welcome);
+  const welcomeHeading = L(`welcomeText-${lang === 'ar' ? 'ar' : 'en'}`, '');
+  addMsg('ai', welcomeHeading ? `${welcomeHeading} — ${COPY[lang].welcome}` : COPY[lang].welcome);
+
+  if (new URLSearchParams(location.search).get('book') === '1') {
+    openBooking();
+  }
 
   const inp = document.getElementById('input');
   inp.addEventListener('input', () => {

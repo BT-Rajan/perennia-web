@@ -8,6 +8,7 @@ panel only ever sees a masked hint of the key it already saved.
 """
 import datetime
 import io
+import json
 import logging
 import re
 import uuid
@@ -107,6 +108,16 @@ def serve_index():
 @app.get("/admin")
 def serve_admin():
     return FileResponse(settings.PUBLIC_DIR / "admin.html")
+
+
+@app.get("/our-work")
+def serve_our_work():
+    return FileResponse(settings.PUBLIC_DIR / "work.html")
+
+
+@app.get("/contact-us")
+def serve_contact_us():
+    return FileResponse(settings.PUBLIC_DIR / "contact.html")
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -381,8 +392,10 @@ class ConfigUpdate(BaseModel):
     tone: Optional[str] = None
     knowledge: Optional[dict] = None
     contact: Optional[dict] = None
-    landing: Optional[dict] = None        # welcome text, tagline, nav links
+    landing: Optional[dict] = None        # every visible landing-page string, nav links, bg color
+    pages: Optional[dict] = None          # Our Work page content
     booking: Optional[dict] = None        # booking prompts and settings
+    calendar: Optional[dict] = None       # Google Calendar id + service-account JSON key
 
 
 ALLOWED_PROVIDERS = {"anthropic", "deepseek", "openai", "custom"}
@@ -393,16 +406,31 @@ def _public_config_view(config: dict) -> dict:
     view = {k: v for k, v in config.items() if k != "apiKeyEncrypted"}
     view["apiKeySet"] = bool(api_key)
     view["apiKeyMasked"] = mask_key(api_key)
+
+    sa_json = storage.get_decrypted_calendar_service_account(config)
+    cal_view = {k: v for k, v in (config.get("calendar") or {}).items() if k != "serviceAccountJsonEncrypted"}
+    cal_view["serviceAccountSet"] = bool(sa_json)
+    cal_view["serviceAccountEmailHint"] = ""
+    if sa_json:
+        try:
+            cal_view["serviceAccountEmailHint"] = json.loads(sa_json).get("client_email", "")
+        except json.JSONDecodeError:
+            pass
+    view["calendar"] = cal_view
     return view
 
 
 @app.get("/api/landing-config")
 async def get_landing_config():
-    """Public endpoint to fetch landing page configuration (welcome text, nav links, etc.)"""
+    """Public endpoint the frontend fetches on load. Every visible string
+    on the public site is meant to come from here — nothing here is ever
+    a secret, so it's safe to expose without authentication."""
     config = storage.load_config()
     return {
         "landing": config.get("landing", {}),
         "booking": config.get("booking", {}),
+        "pages": config.get("pages", {}),
+        "contact": config.get("contact", {}),
     }
 
 
@@ -428,18 +456,57 @@ async def update_config(body: ConfigUpdate, session: dict = Depends(require_csrf
     if body.knowledge is not None:
         config["knowledge"] = {str(k): str(v)[:20000] for k, v in body.knowledge.items()}
     if body.contact is not None:
-        config["contact"] = {str(k): str(v)[:500] for k, v in body.contact.items()}
-    
-    # Landing page config
+        # Free-text fields (title/intro can run a bit longer than address/phone).
+        config["contact"] = {str(k): str(v)[:2000] for k, v in body.contact.items()}
+
+    # ── Landing page config — every visible string on the public site,
+    #    allowlisted by key so an admin can't smuggle arbitrary new keys
+    #    into config.json through this endpoint. ──
+    LANDING_STR_FIELDS = {
+        "brandName-en", "brandName-ar",
+        "welcomeText-en", "welcomeText-ar",
+        "tagline-en", "tagline-ar",
+        "subHeading-en", "subHeading-ar",
+        "chatHint-en", "chatHint-ar",
+        "placeholder-en", "placeholder-ar",
+        "navOurWork-en", "navOurWork-ar",
+        "navContact-en", "navContact-ar",
+        "bookBtn-en", "bookBtn-ar",
+        "langToggleFromEn", "langToggleFromAr",
+        "footerText-en", "footerText-ar",
+    }
+    LANDING_LIST_FIELDS = {"chips-en", "chips-ar", "faq-en", "faq-ar"}
+    LANDING_URL_FIELDS = {"ourWorkUrl", "contactUrl"}
+    HEX_COLOR_RE = re.compile(r"^#[0-9a-fA-F]{3,8}$")
+
     if body.landing is not None:
         landing = config.get("landing", {})
         for key, value in body.landing.items():
-            if key in ["welcomeText-en", "welcomeText-ar", "tagline-en", "tagline-ar"]:
+            if key in LANDING_STR_FIELDS:
                 landing[key] = str(value)[:500]
-            elif key in ["ourWorkUrl", "contactUrl"]:
+            elif key in LANDING_URL_FIELDS:
                 landing[key] = str(value)[:2000]
+            elif key in LANDING_LIST_FIELDS and isinstance(value, list):
+                landing[key] = [str(v)[:200] for v in value][:10]
+            elif key == "showLogo":
+                landing[key] = bool(value)
+            elif key == "backgroundColor":
+                color = str(value).strip()
+                if color and not HEX_COLOR_RE.match(color):
+                    raise HTTPException(400, "Background color must be a hex value like #001030.")
+                landing[key] = color
         config["landing"] = landing
-    
+
+    # ── Our Work page content ──
+    PAGES_FIELDS = {"ourWork-title-en", "ourWork-title-ar", "ourWork-body-en", "ourWork-body-ar"}
+    if body.pages is not None:
+        pages = config.get("pages", {})
+        for key, value in body.pages.items():
+            if key in PAGES_FIELDS:
+                max_len = 300 if key.endswith("title-en") or key.endswith("title-ar") else 20000
+                pages[key] = str(value)[:max_len]
+        config["pages"] = pages
+
     # Booking prompts config
     if body.booking is not None:
         booking = config.get("booking", {})
@@ -450,6 +517,30 @@ async def update_config(body: ConfigUpdate, session: dict = Depends(require_csrf
         if "enabled" in body.booking:
             booking["enabled"] = bool(body.booking["enabled"])
         config["booking"] = booking
+
+    # ── Google Calendar: calendar ID stored as plain config; the
+    #    service-account key is validated as a real service-account JSON
+    #    file, then encrypted at rest via storage.set_calendar_service_account
+    #    (mirrors how the LLM API key is handled). The cached calendar
+    #    client is reset so the very next booking uses the new credentials. ──
+    if body.calendar is not None:
+        calendar_cfg = dict(config.get("calendar") or {})
+        if "calendarId" in body.calendar:
+            calendar_cfg["calendarId"] = str(body.calendar["calendarId"] or "").strip()[:500]
+        config["calendar"] = calendar_cfg
+
+        if body.calendar.get("clearServiceAccount"):
+            config = storage.set_calendar_service_account(config, "")
+        elif body.calendar.get("serviceAccountJson"):
+            raw = str(body.calendar["serviceAccountJson"]).strip()
+            try:
+                parsed = json.loads(raw)
+            except json.JSONDecodeError:
+                raise HTTPException(400, "Invalid service account JSON — paste the full JSON key file content.")
+            if parsed.get("type") != "service_account" or "client_email" not in parsed or "private_key" not in parsed:
+                raise HTTPException(400, "That doesn't look like a Google service-account key file.")
+            config = storage.set_calendar_service_account(config, raw[:50000])
+        gcal.reset_service()
 
     if body.clearApiKey:
         config = storage.set_api_key(config, "")
@@ -474,6 +565,21 @@ async def test_connection(body: TestConnectionRequest, session: dict = Depends(r
         provider=body.provider, api_key=key, model=body.model, base_url=body.baseUrl
     )
     return {"ok": ok, "message": message}
+
+
+class CalendarTestRequest(BaseModel):
+    calendarId: str = ""
+    serviceAccountJson: Optional[str] = None  # test an unsaved key, or omit to test the saved one
+
+
+@app.post("/api/admin/calendar/test")
+async def test_calendar(body: CalendarTestRequest, session: dict = Depends(require_csrf)):
+    config = storage.load_config()
+    calendar_id = body.calendarId.strip() if body.calendarId else (config.get("calendar") or {}).get("calendarId", "")
+    sa_json = body.serviceAccountJson.strip() if body.serviceAccountJson else storage.get_decrypted_calendar_service_account(config)
+    if not sa_json:
+        raise HTTPException(400, "Paste the service account JSON key first (or save it, then test).")
+    return gcal.test_access(calendar_id, sa_json)
 
 
 # ═══════════════════════════════════════════════════════════════════
