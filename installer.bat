@@ -238,12 +238,12 @@ if exist "%PW_FILE%" (
     del /f /q "%PW_FILE%" >nul 2>&1
 )
 
-echo   OK - .env written ^(existing secrets preserved unless --force was used^).
-if /i "%FORCE_FLAG%"=="--force" (
-    echo   NOTE: --force was used -- SECRET_KEY, ENCRYPTION_KEY and
-    echo   ADMIN_PASSWORD_HASH were regenerated. Any previous admin
-    echo   session is now invalid, and a previously saved LLM API key
-    echo   can no longer be decrypted.
+echo   OK - .env written ^(existing secrets preserved unless invalid or --force was used^).
+if /i "%REGENERATED%"=="yes" (
+    echo   NOTE: SECRET_KEY, ENCRYPTION_KEY and/or ADMIN_PASSWORD_HASH were
+    echo   ^(re^)generated -- either --force was used, or no valid existing
+    echo   .env was found. Any previous admin session is now invalid, and
+    echo   a previously saved LLM API key can no longer be decrypted.
 )
 if not exist "start-server.bat" (
     echo   ERROR: start-server.bat was not created -- something went wrong
@@ -279,7 +279,7 @@ echo   1. Double-click start-server.bat to start Perennia
 echo   2. Open http://%HOST%:%PORT% in your browser
 echo   3. Go to http://%HOST%:%PORT%/admin to add your Anthropic API key
 echo.
-echo This install is HTTP-only and bound to %APP_HOST% ^(not exposed to
+echo This install is HTTP-only and bound to %HOST% ^(not exposed to
 echo your network or the internet^). Put a reverse proxy with HTTPS in
 echo front of it before exposing it more broadly, and set
 echo COOKIE_SECURE=true in .env once you do.

@@ -17,6 +17,7 @@ the venv's own Python after dependencies are installed.
 """
 import argparse
 import os
+import re
 import secrets
 import string
 import sys
@@ -26,6 +27,36 @@ import bcrypt
 from cryptography.fernet import Fernet
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+_BCRYPT_RE = re.compile(r"^\$2[aby]\$\d{2}\$.{53}$")
+
+
+def is_valid_fernet_key(value: str) -> bool:
+    """True only if `value` actually works as a Fernet key — not just
+    present. A hand-copied .env.example still has the literal placeholder
+    text 'your-encryption-key-here-base64' in this field, which is
+    non-empty but not a real key; trusting presence alone crashes the
+    app on startup with a cryptic base64-padding error."""
+    if not value:
+        return False
+    try:
+        Fernet(value.encode("utf-8"))
+        return True
+    except Exception:
+        return False
+
+
+def is_valid_bcrypt_hash(value: str) -> bool:
+    """True only if `value` looks like a real bcrypt hash (e.g.
+    '$2b$12$...', 60 chars), not the .env.example placeholder text
+    or something else that happens to be non-empty."""
+    return bool(value) and bool(_BCRYPT_RE.match(value))
+
+
+def is_usable_secret_key(value: str) -> bool:
+    """SECRET_KEY has no fixed format, so this is just a sanity floor:
+    non-empty, reasonably long, and not the literal example placeholder."""
+    return bool(value) and len(value) >= 32 and "your-secret-key-here" not in value
 
 
 def parse_env_file(path: Path) -> dict:
@@ -63,6 +94,29 @@ def main():
 
     def get(key, default=""):
         return existing.get(key, default)
+
+    # An existing .env only counts as a genuine prior install (worth
+    # preserving) if ALL THREE of its security-critical values are
+    # actually usable. If even one is a placeholder or corrupt (e.g. a
+    # hand-copied .env.example, or a partial/failed previous run), the
+    # whole file is untrustworthy — including HOST/PORT/passthrough
+    # values — rather than selectively trusting whichever individual
+    # fields happen to look present. Mixing "trust the placeholder host
+    # and port" with "generate a fresh key" is exactly what produced a
+    # working-looking install that crashed on first launch.
+    existing_is_genuine = (
+        is_usable_secret_key(get("SECRET_KEY"))
+        and is_valid_fernet_key(get("ENCRYPTION_KEY"))
+        and is_valid_bcrypt_hash(get("ADMIN_PASSWORD_HASH"))
+    )
+    if existing and not existing_is_genuine:
+        print(
+            "WARNING: an existing .env was found but its saved secrets aren't valid "
+            "(likely a hand-copied .env.example, or an incomplete previous setup) -- "
+            "ignoring its contents entirely and generating a fresh configuration.",
+            file=sys.stderr,
+        )
+        existing = {}
 
     need_secret_key = args.force or not get("SECRET_KEY")
     need_encryption_key = args.force or not get("ENCRYPTION_KEY")
