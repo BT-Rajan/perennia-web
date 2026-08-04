@@ -85,16 +85,19 @@ python scripts/gen_secrets.py
 ## Run Locally
 
 ```bash
-python app/main.py
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8001
 ```
 
-Server runs on `http://localhost:5000`
+Server runs on `http://localhost:8001`. (The app's own default, if
+`HOST`/`PORT` aren't set in `.env`, is `0.0.0.0:443` — meant for the
+CloudPanel/reverse-proxy production setup above — so pass `--host`/
+`--port` explicitly, or set them in `.env`, for a plain local run.)
 
 ## Docker
 
 ```bash
 docker build -t perennia-web .
-docker run -p 5000:5000 perennia-web
+docker run -p 8001:8001 perennia-web
 ```
 
 ## Directory Structure
@@ -133,63 +136,48 @@ perennia-web/
 
 ## Browser
 
-Visit `http://localhost:5000` after starting server.
+Visit `http://localhost:8001` after starting server.
 
-## Windows CMD
+## Windows
 
-### Clone
+Easiest: double-click `installer.bat` (see `WINDOWS-INSTALL.txt` for the
+full walkthrough). It creates the virtual environment, installs
+dependencies, generates a working `.env`, and writes `start-server.bat`
+for you — no manual steps required.
+
+Manual setup, if you'd rather do it yourself:
 
 ```cmd
 git clone https://github.com/BT-Rajan/perennia-web.git
 cd perennia-web
-```
-
-### Install Dependencies
-
-```cmd
+python -m venv venv
+venv\Scripts\activate.bat
 pip install -r requirements.txt
-```
-
-### Environment Setup
-
-```cmd
+python scripts\gen_secrets.py
 copy .env.example .env
 notepad .env
 ```
 
-### Generate Secrets
+Paste the `SECRET_KEY` / `ENCRYPTION_KEY` / `ADMIN_PASSWORD_HASH` values
+`gen_secrets.py` printed into `.env`, set `HOST=127.0.0.1`, `PORT=8001`,
+and `COOKIE_SECURE=false` (there's no TLS on a local install — a `true`
+value here silently breaks admin login), then run:
 
 ```cmd
-python scripts/gen_secrets.py
+venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1 --port 8001
 ```
 
-### Run Locally
-
-```cmd
-python app/main.py
-```
-
-Server runs on `http://localhost:5000`
-
-### Docker
-
-```cmd
-docker build -t perennia-web .
-docker run -p 5000:5000 perennia-web
-```
-
-### Production
-
-```cmd
-pip install gunicorn
-gunicorn -w 4 -b 0.0.0.0:5000 app.main:app
-```
+Server runs on `http://localhost:8001`.
 
 ## Linux Production
 
 ```bash
-gunicorn -w 4 -b 0.0.0.0:5000 app.main:app
+pip install gunicorn
+gunicorn -k uvicorn.workers.UvicornWorker -w 4 -b 0.0.0.0:8001 app.main:app
 ```
+
+(Or use `install.sh` above, which sets this up under pm2 with HTTPS
+automatically instead.)
 
 ## License
 
