@@ -142,17 +142,6 @@
       opacity: 0; transition: opacity 0.3s ease;
     }
 
-    /* ── Brand name (replaces the image logo when no logo is shown) ── */
-    .brand-name {
-      font-family: var(--font-en-display);
-      font-size: 1.15rem;
-      font-weight: 700;
-      letter-spacing: 0.03em;
-      color: #fff;
-      margin-bottom: 10px;
-    }
-    [dir="rtl"] .brand-name { font-family: var(--font-ar); font-weight: 600; }
-    body.theme-light .brand-name { color: #16233f; }
 
     /* ── Chat hint caption (e.g. "Tap to start chatting") ── */
     .chat-hint {
@@ -222,17 +211,9 @@
       width: 100%;
       max-width: 1100px;
       display: flex;
-      flex-direction: row;
-      align-items: flex-start;
-      gap: 3rem;
-      justify-content: center;
-    }
-    
-    @media (max-width: 1024px) {
-      .inner {
-        flex-direction: column;
-        max-width: 700px;
-      }
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
     }
 
     /* ── Image Sidebar (responsive) ── */
@@ -975,7 +956,6 @@
 
   <div class="lang-bar">
     <button class="theme-btn" id="theme-btn" onclick="toggleTheme()" title="Toggle light / dark">☀</button>
-    <button class="chip" id="book-btn" onclick="openBooking()" style="white-space:nowrap">📅 <span id="book-btn-label">Book a call</span></button>
     <button class="lang-btn" id="lang-btn" onclick="toggleLang()">AR | عربي</button>
   </div>
 
@@ -984,7 +964,6 @@
 
       <!-- Tagline + Content Wrapper -->
       <div class="tagline-wrap">
-        <div class="brand-name" id="brand-name">PERENNIA</div>
         <div class="tagline-main">
           <span id="tagline-line1">Solving Today. </span><span class="gold" id="tagline-line2">Shaping Tomorrow.</span>
         </div>
@@ -1191,9 +1170,6 @@ function renderUI() {
 
   applyBackgroundTint();
 
-  // ── Brand name (single instance — the image logo has been removed) ──
-  document.getElementById('brand-name').textContent = L(`brandName-${suf}`, isAr ? 'بيرينيا' : 'PERENNIA');
-
   // ── Nav links: Our Work / Contact Us — an admin-set external URL
   //    overrides the built-in page for that link ──
   const navWork = document.getElementById('nav-work');
@@ -1232,7 +1208,6 @@ function renderUI() {
   document.getElementById('lang-btn').textContent = isAr
     ? L('langToggleFromAr', c.toggle)
     : L('langToggleFromEn', c.toggle);
-  document.getElementById('book-btn-label').textContent = L(`bookBtn-${suf}`, isAr ? 'احجز مكالمة' : 'Book a call');
   document.getElementById('site-footer').textContent = L(`footerText-${suf}`, '© 2024 PERENNIA · بيرينيا');
 
   // Chips
@@ -1562,10 +1537,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
   checkAvatar(); // updates aiAvatarSrc for subsequent messages once it resolves
-
-  if (new URLSearchParams(location.search).get('book') === '1') {
-    openBooking();
-  }
 
   const inp = document.getElementById('input');
   inp.addEventListener('input', () => {

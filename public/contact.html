@@ -111,7 +111,7 @@
       <div class="divider"></div>
       <div class="intro" id="page-intro">Loading…</div>
       <div class="details" id="details"></div>
-      <a class="book-cta" id="book-cta" href="/?book=1">📅 <span id="book-cta-label">Book a call</span></a>
+      <a class="book-cta" id="book-cta" href="/">💬 <span id="book-cta-label">Chat with us</span></a>
     </div>
   </main>
   <footer id="site-footer">© 2024 PERENNIA · بيرينيا</footer>
@@ -151,7 +151,7 @@
         ? L('langToggleFromAr', 'EN | English')
         : L('langToggleFromEn', 'AR | عربي');
       document.getElementById('site-footer').textContent = L(`footerText-${suf}`, '© 2024 PERENNIA · بيرينيا');
-      document.getElementById('book-cta-label').textContent = L(`bookBtn-${suf}`, isAr ? 'احجز مكالمة' : 'Book a call');
+      document.getElementById('book-cta-label').textContent = isAr ? 'تحدث معنا' : 'Chat with us';
 
       const title = C(`ct-title-${suf}`, isAr ? 'تواصل معنا' : 'Contact Us');
       document.getElementById('page-title').textContent = title;

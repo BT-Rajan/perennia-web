@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Perennia Admin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
@@ -15,25 +15,32 @@
       --navy-deep: #000e28;
       --gold:      #d0a030;
       --gold-dim:  rgba(208,160,48,0.10);
-      --bg:        #F0EFEB;
+      --gold-border: rgba(208,160,48,0.30);
+      --bg:        #eef3fa;
       --surface:   #ffffff;
-      --border:    #E2DFD9;
-      --text:      #1a1a1a;
-      --muted:     #737373;
+      --border:    rgba(20,40,80,0.12);
+      --text:      #16233f;
+      --muted:     rgba(22,35,63,0.55);
       --red:       #dc2626;
       --green:     #16a34a;
       --radius:    8px;
       --sidebar:   240px;
-      --shadow:    0 1px 4px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
+      --shadow:    0 1px 4px rgba(20,40,80,0.06), 0 4px 20px rgba(20,40,80,0.06);
+      --font-display: 'Cormorant Garamond', Georgia, serif;
     }
 
     body {
       font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
       color: var(--text);
       font-size: 14px;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
+      background:
+        radial-gradient(ellipse 100% 55% at 50% -5%, rgba(208,160,48,0.10) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 70% at 15% 85%, rgba(200,220,245,0.55) 0%, transparent 55%),
+        radial-gradient(ellipse 70% 70% at 88% 15%, rgba(180,205,235,0.45) 0%, transparent 50%),
+        linear-gradient(160deg, #f7f9fc 0%, #f2f6fb 20%, #eef3fa 40%, #e9f0f9 60%, #e3edf8 80%, #dbe7f5 100%);
+      background-attachment: fixed;
     }
 
     /* ══ LOGIN ══════════════════════════════════════════════ */
@@ -46,15 +53,17 @@
     }
 
     .login-card {
-      background: #fff;
+      background: linear-gradient(145deg, rgba(255,255,255,0.95) 0%, rgba(232,242,252,0.92) 100%);
+      border: 1px solid var(--gold-border);
       border-radius: 14px;
       padding: 2.5rem 2.25rem;
       width: 360px;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+      box-shadow: 0 0 0 1px rgba(201,162,39,0.08), 0 20px 60px rgba(0,0,0,0.35);
+      backdrop-filter: blur(20px);
     }
 
     .login-brand { text-align: center; margin-bottom: 1.75rem; }
-    .login-brand-name { font-size: 1.4rem; font-weight: 700; color: var(--navy); letter-spacing: -0.02em; }
+    .login-brand-name { font-family: var(--font-display); font-size: 1.7rem; font-weight: 600; color: var(--navy); letter-spacing: -0.01em; }
     .login-brand-name em { color: var(--gold); font-style: normal; }
     .login-divider { width: 28px; height: 2px; background: var(--gold); margin: 0.6rem auto; border-radius: 2px; }
     .login-brand-sub { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
@@ -65,6 +74,10 @@
     .field input:focus { border-color: var(--navy); background: #fff; }
 
     .login-error { display: none; background: #fef2f2; border: 1px solid #fecaca; color: var(--red); border-radius: var(--radius); padding: 0.6rem 0.85rem; font-size: 0.8rem; margin-bottom: 1rem; }
+    .login-ok { display: none; background: #f0fdf4; border: 1px solid #86efac; color: #15803d; border-radius: var(--radius); padding: 0.6rem 0.85rem; font-size: 0.8rem; margin-bottom: 1rem; }
+    .login-forgot-copy { font-size: 0.76rem; color: var(--muted); line-height: 1.55; margin-bottom: 1rem; }
+    .login-hint a { color: var(--gold); text-decoration: none; font-weight: 600; }
+    .login-hint a:hover { text-decoration: underline; }
 
     .btn-login { width: 100%; padding: 0.78rem; background: var(--gold); color: #fff; border: none; border-radius: var(--radius); font-family: inherit; font-size: 0.88rem; font-weight: 700; cursor: pointer; transition: background 0.18s; }
     .btn-login:hover { background: #b8911f; }
@@ -83,7 +96,7 @@
     }
 
     .sb-top { padding: 1.25rem 1.25rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.07); flex-shrink: 0; }
-    .sb-logo { font-size: 1rem; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+    .sb-logo { font-family: var(--font-display); font-size: 1.15rem; font-weight: 600; color: #fff; letter-spacing: -0.01em; }
     .sb-logo em { color: var(--gold); font-style: normal; }
     .sb-tag { font-size: 0.63rem; color: rgba(255,255,255,0.28); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
 
@@ -111,7 +124,7 @@
     /* Main */
     .main { margin-left: var(--sidebar); min-height: 100vh; display: flex; flex-direction: column; transition: margin-left 0.2s ease; }
 
-    .topbar { position: sticky; top: 0; z-index: 40; background: rgba(240,239,235,0.93); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 1.75rem; height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .topbar { position: sticky; top: 0; z-index: 40; background: rgba(238,243,250,0.85); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); padding: 0 1.75rem; height: 54px; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
     .topbar-left { display: flex; align-items: center; gap: 0.85rem; min-width: 0; }
     .topbar-title { font-size: 0.9rem; font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .btn-prev { display: flex; align-items: center; gap: 0.4rem; padding: 0.42rem 1rem; background: transparent; border: 1.5px solid var(--border); border-radius: 100px; color: var(--muted); font-family: inherit; font-size: 0.76rem; font-weight: 600; cursor: pointer; text-decoration: none; transition: all 0.18s; flex-shrink: 0; }
@@ -158,11 +171,19 @@
 
     /* Page header */
     .ph { margin-bottom: 1.5rem; }
-    .ph h1 { font-size: 1.1rem; font-weight: 700; color: var(--navy); margin-bottom: 0.2rem; }
+    .ph h1 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--navy); margin-bottom: 0.2rem; letter-spacing: -0.01em; }
     .ph p  { font-size: 0.82rem; color: var(--muted); }
 
     /* Cards */
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.1rem; box-shadow: var(--shadow); }
+    .card {
+      background: linear-gradient(145deg, rgba(255,255,255,0.82) 0%, rgba(220,235,250,0.55) 50%, rgba(255,255,255,0.72) 100%);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 1.1rem;
+      box-shadow: 0 0 0 1px rgba(201,162,39,0.06), var(--shadow);
+      backdrop-filter: blur(20px);
+    }
     .card-lbl { font-size: 0.62rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--gold); margin-bottom: 1.1rem; padding-bottom: 0.65rem; border-bottom: 1px solid var(--border); }
 
     /* Forms */
@@ -180,8 +201,8 @@
     @media (max-width: 680px) { .twin { grid-template-columns: 1fr; } }
 
     /* Buttons */
-    .btn-save { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.75rem; background: var(--navy); color: #fff; border: none; border-radius: var(--radius); font-family: inherit; font-size: 0.84rem; font-weight: 600; cursor: pointer; transition: background 0.18s; }
-    .btn-save:hover { background: var(--navy-deep); }
+    .btn-save { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.75rem; background: var(--gold); color: #fff; border: none; border-radius: 100px; font-family: inherit; font-size: 0.84rem; font-weight: 700; cursor: pointer; transition: background 0.18s; }
+    .btn-save:hover { background: #b8911f; }
     .btn-2 { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.25rem; background: transparent; border: 1.5px solid var(--border); border-radius: var(--radius); font-family: inherit; font-size: 0.82rem; font-weight: 600; color: var(--muted); cursor: pointer; transition: all 0.18s; }
     .btn-2:hover { border-color: var(--navy); color: var(--navy); }
     .btn-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
@@ -216,7 +237,7 @@
     .pill-warn { background: #fef9c3; color: #a16207; }
 
     /* Summary bar */
-    .sum-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; padding: 0.9rem 1.25rem; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.1rem; box-shadow: var(--shadow); }
+    .sum-bar { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem; padding: 0.9rem 1.25rem; background: linear-gradient(145deg, rgba(255,255,255,0.82) 0%, rgba(220,235,250,0.55) 100%); border: 1px solid var(--border); border-radius: 10px; margin-bottom: 1.1rem; box-shadow: 0 0 0 1px rgba(201,162,39,0.06), var(--shadow); backdrop-filter: blur(20px); }
     .sum-text { font-size: 0.82rem; font-weight: 600; color: var(--navy); }
     .sum-sub  { font-size: 0.72rem; color: var(--muted); margin-top: 1px; }
 
@@ -246,7 +267,7 @@
 
     /* Dashboard tiles */
     .dash-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 0.9rem; margin-bottom: 1.25rem; }
-    .dash-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem; cursor: pointer; transition: all 0.18s; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 0.5rem; }
+    .dash-tile { background: linear-gradient(145deg, rgba(255,255,255,0.82) 0%, rgba(220,235,250,0.55) 100%); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem; cursor: pointer; transition: all 0.18s; box-shadow: 0 0 0 1px rgba(201,162,39,0.06), var(--shadow); backdrop-filter: blur(20px); display: flex; flex-direction: column; gap: 0.5rem; }
     .dash-tile:hover { border-color: var(--gold); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.09); }
     .d-icon { font-size: 1.2rem; }
     .d-name { font-size: 0.8rem; font-weight: 600; color: var(--navy); }
@@ -275,10 +296,38 @@
       <div class="login-divider"></div>
       <div class="login-brand-sub">Admin Panel</div>
     </div>
-    <div class="login-error" id="lerr">Incorrect username or password.</div>
-    <div class="field"><label>Username</label><input type="text" id="lu" placeholder="admin" autocomplete="username"></div>
-    <div class="field"><label>Password</label><input type="password" id="lp" placeholder="••••••••" autocomplete="current-password"></div>
-    <button class="btn-login" onclick="doLogin()">Sign In</button>
+
+    <!-- SIGN IN -->
+    <div id="login-form-wrap">
+      <div class="login-error" id="lerr">Incorrect username or password.</div>
+      <div class="field"><label>Username</label><input type="text" id="lu" placeholder="admin" autocomplete="username"></div>
+      <div class="field"><label>Password</label><input type="password" id="lp" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="btn-login" onclick="doLogin()">Sign In</button>
+      <div class="login-hint"><a href="#" onclick="showForgotForm(event)">Forgot password?</a></div>
+    </div>
+
+    <!-- FORGOT PASSWORD (request a reset link) -->
+    <div id="forgot-form-wrap" style="display:none">
+      <p class="login-forgot-copy">
+        No email is configured for this site, so the reset link is written to
+        <code>password_reset.secret</code> in the project folder on the server (and logged to
+        the server console) instead of being sent anywhere. Ask whoever has server access for it.
+      </p>
+      <div class="login-error" id="ferr"></div>
+      <div class="login-ok" id="fok"></div>
+      <button class="btn-login" id="forgot-submit-btn" onclick="requestReset()">Generate Reset Link</button>
+      <div class="login-hint"><a href="#" onclick="showLoginForm(event)">Back to sign in</a></div>
+    </div>
+
+    <!-- RESET PASSWORD (arrived via ?reset=token) -->
+    <div id="reset-form-wrap" style="display:none">
+      <p class="login-forgot-copy">Choose a new password (at least 12 characters).</p>
+      <div class="login-error" id="rerr"></div>
+      <div class="field"><label>New password</label><input type="password" id="rp1" placeholder="••••••••" autocomplete="new-password"></div>
+      <div class="field"><label>Confirm new password</label><input type="password" id="rp2" placeholder="••••••••" autocomplete="new-password"></div>
+      <button class="btn-login" id="reset-submit-btn" onclick="submitReset()">Set New Password</button>
+      <div class="login-hint"><a href="#" onclick="showLoginForm(event)">Back to sign in</a></div>
+    </div>
   </div>
 </div>
 
@@ -622,10 +671,6 @@
           <div class="frow"><label class="flabel">"Contact Us" external URL (optional — overrides the built-in page)</label><input type="url" class="finput" id="ld-contactUrl" placeholder="https://…"></div>
           <hr class="div">
           <div class="twin">
-            <div class="frow"><label class="flabel">"Book a call" button <span class="badge ben">EN</span></label><input type="text" class="finput" id="ld-bookBtn-en"></div>
-            <div class="frow"><label class="flabel">"Book a call" button <span class="badge bar">AR</span></label><input type="text" class="finput" id="ld-bookBtn-ar" dir="rtl"></div>
-          </div>
-          <div class="twin">
             <div class="frow"><label class="flabel">Language button (shown while site is in EN)</label><input type="text" class="finput" id="ld-langToggleFromEn" placeholder="AR | عربي"></div>
             <div class="frow"><label class="flabel">Language button (shown while site is in AR)</label><input type="text" class="finput" id="ld-langToggleFromAr" placeholder="EN | English"></div>
           </div>
@@ -943,6 +988,95 @@ async function signout() {
   try { await fetch('/api/admin/logout', { method: 'POST' }); } catch {}
   csrfToken = null;
   location.reload();
+}
+
+// ── Forgot / reset password ────────────────────────
+function showLoginForm(e) {
+  if (e) e.preventDefault();
+  document.getElementById('login-form-wrap').style.display = 'block';
+  document.getElementById('forgot-form-wrap').style.display = 'none';
+  document.getElementById('reset-form-wrap').style.display = 'none';
+  history.replaceState(null, '', location.pathname);
+}
+
+function showForgotForm(e) {
+  if (e) e.preventDefault();
+  document.getElementById('login-form-wrap').style.display = 'none';
+  document.getElementById('forgot-form-wrap').style.display = 'block';
+  document.getElementById('reset-form-wrap').style.display = 'none';
+  document.getElementById('ferr').style.display = 'none';
+  document.getElementById('fok').style.display = 'none';
+}
+
+function showResetForm() {
+  document.getElementById('login-form-wrap').style.display = 'none';
+  document.getElementById('forgot-form-wrap').style.display = 'none';
+  document.getElementById('reset-form-wrap').style.display = 'block';
+}
+
+async function requestReset() {
+  const errEl = document.getElementById('ferr');
+  const okEl = document.getElementById('fok');
+  const btn = document.getElementById('forgot-submit-btn');
+  errEl.style.display = 'none';
+  okEl.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Generating…';
+  try {
+    const res = await fetch('/api/admin/request-password-reset', { method: 'POST' });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      okEl.textContent = data.message || 'Reset link generated.';
+      okEl.style.display = 'block';
+    } else {
+      errEl.textContent = data.detail || 'Could not generate a reset link.';
+      errEl.style.display = 'block';
+    }
+  } catch {
+    errEl.textContent = 'Could not reach the server.';
+    errEl.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Generate Reset Link';
+}
+
+async function submitReset() {
+  const errEl = document.getElementById('rerr');
+  const p1 = document.getElementById('rp1').value;
+  const p2 = document.getElementById('rp2').value;
+  const token = new URLSearchParams(location.search).get('reset');
+  errEl.style.display = 'none';
+
+  if (p1.length < 12) { errEl.textContent = 'Password must be at least 12 characters.'; errEl.style.display = 'block'; return; }
+  if (p1 !== p2) { errEl.textContent = 'Passwords do not match.'; errEl.style.display = 'block'; return; }
+
+  const btn = document.getElementById('reset-submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'Saving…';
+  try {
+    const res = await fetch('/api/admin/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, newPassword: p1 })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      showLoginForm();
+      const lerr = document.getElementById('lerr');
+      lerr.className = 'login-ok';
+      lerr.textContent = 'Password updated — sign in with your new password.';
+      lerr.style.display = 'block';
+      setTimeout(() => { lerr.style.display = 'none'; lerr.className = 'login-error'; }, 5000);
+    } else {
+      errEl.textContent = data.detail || 'That reset link is invalid or has expired.';
+      errEl.style.display = 'block';
+    }
+  } catch {
+    errEl.textContent = 'Could not reach the server.';
+    errEl.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.textContent = 'Set New Password';
 }
 
 // ── Authenticated fetch helper: always sends the CSRF header on
@@ -1370,7 +1504,7 @@ const LD_STR_FIELDS = [
   'brandName-en','brandName-ar','welcomeText-en','welcomeText-ar',
   'tagline-en','tagline-ar','subHeading-en','subHeading-ar',
   'chatHint-en','chatHint-ar','navOurWork-en','navOurWork-ar',
-  'navContact-en','navContact-ar','bookBtn-en','bookBtn-ar',
+  'navContact-en','navContact-ar',
   'langToggleFromEn','langToggleFromAr','footerText-en','footerText-ar',
   'placeholder-en','placeholder-ar',
 ];
@@ -1725,6 +1859,10 @@ async function init() {
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
+  if (new URLSearchParams(location.search).get('reset')) {
+    showResetForm();
+    return;
+  }
   try {
     const res = await fetch('/api/admin/session', { credentials: 'same-origin' });
     if (res.ok) {

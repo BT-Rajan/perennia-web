@@ -11,6 +11,7 @@ import io
 import json
 import logging
 import re
+import secrets
 import uuid
 from pathlib import Path
 from typing import Optional
@@ -26,12 +27,12 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from PIL import Image
 
-from app.config import settings
+from app.config import settings, BASE_DIR
 from app import storage, llm, extract, gcal, scheduling
 from app import prompt as prompt_mod
 from app.security import (
     verify_password, create_session_token, verify_session_token,
-    new_csrf_token, csrf_tokens_match, mask_key,
+    new_csrf_token, csrf_tokens_match, mask_key, hash_password,
 )
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
@@ -348,7 +349,7 @@ class LoginRequest(BaseModel):
 async def admin_login(request: Request, response: Response, body: LoginRequest):
     valid = (
         body.username.strip() == settings.ADMIN_USERNAME
-        and verify_password(body.password, settings.ADMIN_PASSWORD_HASH)
+        and verify_password(body.password, storage.get_admin_password_hash())
     )
     if not valid:
         # Generic message — never reveal whether the username or password was wrong.
@@ -377,6 +378,76 @@ async def admin_logout(response: Response):
 @app.get("/api/admin/session")
 async def admin_session(session: dict = Depends(get_session)):
     return {"authenticated": True, "username": session["u"], "csrfToken": session["csrf"]}
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Admin: password reset
+#
+# This is a single-admin system with no email service configured, so
+# "sending" a reset link means writing it somewhere only someone with
+# access to the server's filesystem or logs can read — the same trust
+# boundary as the .env file the admin password hash already lives in.
+# The link is written to password_reset.secret in the project root
+# (gitignored) and logged at WARNING level. Whoever can read either of
+# those already has the access needed to change ADMIN_PASSWORD_HASH in
+# .env directly, so this doesn't weaken anything — it's a more
+# convenient in-panel path to the same trust level.
+# ═══════════════════════════════════════════════════════════════════
+
+RESET_TOKEN_TTL_MINUTES = 30
+RESET_SECRET_FILE = BASE_DIR / "password_reset.secret"
+
+
+@app.post("/api/admin/request-password-reset")
+@limiter.limit(settings.RATE_LIMIT_LOGIN)
+async def request_password_reset(request: Request):
+    token = secrets.token_urlsafe(32)
+    config = storage.load_config()
+    config = storage.issue_password_reset_token(config, token, ttl_minutes=RESET_TOKEN_TTL_MINUTES)
+    storage.save_config(config)
+
+    reset_link = f"/admin?reset={token}"
+    file_contents = (
+        f"Perennia admin password reset\n"
+        f"Requested: {datetime.datetime.now(datetime.timezone.utc).isoformat()}\n"
+        f"Valid for: {RESET_TOKEN_TTL_MINUTES} minutes\n\n"
+        f"Reset link (append to your site's URL): {reset_link}\n\n"
+        f"If you didn't request this, ignore it — the link expires automatically\n"
+        f"and no password is changed until someone actually submits a new one.\n"
+        f"This file is overwritten by the next reset request and is gitignored.\n"
+    )
+    try:
+        RESET_SECRET_FILE.write_text(file_contents, encoding="utf-8")
+    except OSError as e:
+        log.error("Could not write %s: %s", RESET_SECRET_FILE, e)
+    log.warning("Admin password reset requested. Link: %s (also written to %s)", reset_link, RESET_SECRET_FILE)
+
+    # Always return the same generic message regardless of whether anything
+    # meaningful happened server-side — this endpoint is unauthenticated by
+    # necessity, so it must not become an oracle for anything.
+    return {
+        "ok": True,
+        "message": f"If this server is configured correctly, a reset link has been written to "
+                   f"{RESET_SECRET_FILE.name} in the server's project folder and logged to the "
+                   f"server console. It's valid for {RESET_TOKEN_TTL_MINUTES} minutes.",
+    }
+
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    newPassword: str = Field(min_length=12, max_length=200)
+
+
+@app.post("/api/admin/reset-password")
+@limiter.limit(settings.RATE_LIMIT_LOGIN)
+async def reset_password(request: Request, body: ResetPasswordRequest):
+    config = storage.load_config()
+    if not storage.verify_password_reset_token(config, body.token):
+        raise HTTPException(400, "This reset link is invalid or has expired. Request a new one.")
+    config = storage.set_admin_password_hash(config, hash_password(body.newPassword))
+    storage.save_config(config)
+    log.warning("Admin password was changed via the password-reset flow.")
+    return {"ok": True}
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -471,7 +542,6 @@ async def update_config(body: ConfigUpdate, session: dict = Depends(require_csrf
         "placeholder-en", "placeholder-ar",
         "navOurWork-en", "navOurWork-ar",
         "navContact-en", "navContact-ar",
-        "bookBtn-en", "bookBtn-ar",
         "langToggleFromEn", "langToggleFromAr",
         "footerText-en", "footerText-ar",
     }

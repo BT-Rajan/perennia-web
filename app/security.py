@@ -9,6 +9,7 @@ Security primitives:
   - Fernet symmetric encryption for the LLM API key at rest, so a raw
     filesystem/backup leak of config.json does not hand over a usable key
 """
+import hashlib
 import hmac
 import secrets
 
@@ -29,6 +30,10 @@ def verify_password(plaintext: str, bcrypt_hash: str) -> bool:
         return False
 
 
+def hash_password(plaintext: str) -> str:
+    return bcrypt.hashpw(plaintext.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
+
+
 def create_session_token(username: str, csrf_token: str) -> str:
     """Signed, timestamped token. Tampering or expiry both fail verification."""
     return _serializer.dumps({"u": username, "csrf": csrf_token})
@@ -44,6 +49,14 @@ def verify_session_token(token: str) -> dict | None:
 
 def new_csrf_token() -> str:
     return secrets.token_urlsafe(32)
+
+
+def hash_token(token: str) -> str:
+    """Fast hash for high-entropy random tokens (password-reset links), as
+    opposed to hash_password which is deliberately slow for user-chosen
+    passwords. Storing this instead of the raw token means a leak of
+    config.json alone can't be used to reset the admin password."""
+    return hashlib.sha256(token.encode("utf-8")).hexdigest()
 
 
 def csrf_tokens_match(a: str | None, b: str | None) -> bool:

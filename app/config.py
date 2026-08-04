@@ -113,3 +113,23 @@ except ZoneInfoNotFoundError:
         file=sys.stderr,
     )
     sys.exit(1)
+
+# A local, gitignored reference file with the current admin username and
+# how to get in if the password is lost. The plaintext password itself is
+# never written here (or anywhere, after the moment it's first chosen) —
+# only its one-way bcrypt hash is ever stored, in .env or config.json.
+try:
+    (BASE_DIR / "admin_access.secret").write_text(
+        "Perennia — Admin Access\n"
+        f"Username: {settings.ADMIN_USERNAME}\n\n"
+        "Password: not stored in plaintext anywhere in this system.\n"
+        "  - Forgot it? Use \"Forgot password?\" on the /admin login screen —\n"
+        "    it writes a reset link to password_reset.secret in this same\n"
+        "    folder (also logged to the server console).\n"
+        "  - Setting up for the first time? Run scripts/gen_secrets.py, which\n"
+        "    writes admin_credentials.secret with the plaintext password you\n"
+        "    just chose (the only point it's ever available in plaintext).\n",
+        encoding="utf-8",
+    )
+except OSError:
+    pass  # non-fatal — read-only filesystem or similar; not worth crashing startup over
